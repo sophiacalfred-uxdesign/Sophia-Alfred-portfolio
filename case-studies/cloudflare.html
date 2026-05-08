@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Cloudflare — Sophia Alfred</title>
+  <link rel="icon" href="../assets/favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    @font-face {
+      font-family: 'Self Modern';
+      src: url('../assets/fonts/Self_Modern_Regular.ttf') format('truetype');
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { background: #F4EFE4; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #F4EFE4; }
+    ::-webkit-scrollbar-thumb { background: #A8A8B3; border-radius: 3px; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+function EWNav({ activePage = 'work' }) {
+  return (
+    <nav style={{
+      width: '100%', height: 56, background: '#F4EFE4',
+      borderBottom: '1px solid rgba(28,28,34,0.07)',
+      display: 'flex', alignItems: 'center',
+      justifyContent: 'space-between', padding: '0 24px',
+      position: 'sticky', top: 0, zIndex: 100, boxSizing: 'border-box'
+    }}>
+      <a href="../index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <img src="../assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
+      </a>
+      <div style={{ display: 'flex', gap: 24 }}>
+        {[
+          ['work',   'Work', '../index.html#case-studies'],
+          ['about',  'About',        '../about.html'],
+          ['resume', 'Resume',       '../assets/sophia-resume.pdf'],
+        ].map(([id, label, href]) =>
+          <a key={id} href={href}
+            target={id === 'resume' ? '_blank' : undefined}
+            rel={id === 'resume' ? 'noopener noreferrer' : undefined}
+            style={{
+              fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
+              letterSpacing: '0.01em', textDecoration: 'none',
+              color: activePage === id ? '#1C1C22' : '#7A7A85', transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => e.target.style.color = '#1C1C22'}
+            onMouseLeave={e => e.target.style.color = activePage === id ? '#1C1C22' : '#7A7A85'}>
+            {label}
+          </a>
+        )}
+      </div>
+    </nav>
+  );
+}
+
+function EWFooter() {
+  return (
+    <footer style={{ background: '#1C1C23', boxShadow: '0px 4px 4px rgba(0,0,0,0.25)' }}>
+      <div style={{
+        borderTop: '1px solid rgba(255,255,255,0.08)', padding: '40px 36px',
+        display: 'flex', justifyContent: 'space-between',
+        alignItems: 'flex-start', flexWrap: 'wrap', gap: 24
+      }}>
+        <img src="../assets/sophia-logo-white.png" alt="sophia alfred"
+          style={{ height: 32, display: 'block', opacity: 0.9 }} />
+        <div style={{ display: 'flex', gap: 48 }}>
+          {[
+            { heading: 'say hi', links: [
+              { label: 'LinkedIn', href: 'https://linkedin.com/in/sophiaalfred' },
+              { label: 'Email',    href: 'mailto:sophiacalfred@gmail.com' },
+              { label: 'Resume',   href: '../assets/sophia-resume.pdf', external: true },
+            ]},
+            { heading: 'work', links: [
+              { label: 'The Living Record', href: 'living-record.html' },
+              { label: 'Garden Tours',      href: 'garden-tours.html' },
+              { label: 'Yogapedia',         href: 'yogapedia.html' },
+              { label: 'My Art Gallery', href: '../about.html#gallery' },
+            ]},
+          ].map(col =>
+            <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{
+                fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 11,
+                color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em',
+                textTransform: 'lowercase', marginBottom: 2,
+              }}>{col.heading}</div>
+              {col.links.map(l =>
+                <a key={l.label} href={l.href}
+                  target={l.external ? '_blank' : undefined}
+                  rel={l.external ? 'noopener noreferrer' : undefined}
+                  style={{
+                    fontFamily: 'Manrope, sans-serif', fontSize: 13,
+                    color: 'rgba(255,255,255,0.35)', letterSpacing: '0.01em',
+                    textDecoration: 'none', transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.85)'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.35)'}>
+                  {l.label}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{
+        padding: '0 36px 24px', fontFamily: 'Manrope, sans-serif',
+        fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.02em',
+      }}>© 2026 Sophia Alfred</div>
+    </footer>
+  );
+}
+
+function CloudflarePage() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F4EFE4' }}>
+      <EWNav activePage="work" />
+
+      <div style={{ width: '100%', aspectRatio: '16/7', background: '#F4A144', position: 'relative', overflow: 'hidden' }}>
+        <video src="../assets/cloudflare-cover.mov" autoPlay muted loop playsInline
+          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(244,161,68,0.45)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexDirection: 'column', gap: 16, padding: '0 36px', textAlign: 'center',
+        }}>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>
+            cloudflare internship · summer + fall 2026
+          </div>
+          <h1 style={{ fontFamily: "'Self Modern', serif", fontWeight: 400, fontSize: 'clamp(28px, 4vw, 56px)', color: '#fff', lineHeight: 1.2, maxWidth: 700 }}>
+            Cloudflare Data Visualization Platforms
+          </h1>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
+            borderRadius: 20, padding: '6px 16px',
+          }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#F4A144', border: '2px solid #fff' }} />
+            <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: 12, fontWeight: 600, color: '#fff', letterSpacing: '0.05em' }}>
+              Case study in progress
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <main style={{ flex: 1, padding: '80px 36px', maxWidth: 800, margin: '0 auto', width: '100%' }}>
+        <p style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 16, lineHeight: '28px', color: '#7A7A85', marginBottom: 24 }}>
+          This case study is currently in progress — I'm working on this project through summer and fall 2026. Check back later for the full write-up.
+        </p>
+        <a href="../index.html" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
+          color: '#1C1C22', textDecoration: 'none', borderBottom: '1px solid #1C1C22', paddingBottom: 2,
+        }}>← Back to all work</a>
+      </main>
+
+      <EWFooter />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<CloudflarePage />);
+</script>
+</body>
+</html>

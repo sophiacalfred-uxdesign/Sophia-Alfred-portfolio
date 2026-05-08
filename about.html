@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>About — Sophia Alfred</title>
+  <link rel="icon" href="assets/favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    @font-face {
+      font-family: 'Self Modern';
+      src: url('assets/fonts/Self_Modern_Regular.ttf') format('truetype');
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { background: #F4EFE4; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #FFFBF4; }
+    ::-webkit-scrollbar-thumb { background: #A8A8B3; border-radius: 3px; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-name {
+      animation: slideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .hero-sub {
+      animation: slideUp 0.7s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .hero-pic {
+      animation: slideUp 0.7s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Marker highlight sweep on hover */
+    .hobby {
+      display: inline;
+      background-repeat: no-repeat;
+      background-position: 0 88%;
+      background-size: 0% 36%;
+      transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: 2px;
+      padding-bottom: 1px;
+    }
+    .hobby:hover { background-size: 100% 36%; }
+    .hobby-1 { background-image: linear-gradient(#F2E08A, #F2E08A); }
+    .hobby-2 { background-image: linear-gradient(#fdc0b0, #fdc0b0); }
+    .hobby-3 { background-image: linear-gradient(#046EEB44, #046EEB44); }
+
+    .exp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .exp-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(28,28,34,0.06);
+    }
+    .exp-row:first-child { border-top: 1px solid rgba(28,28,34,0.06); }
+
+    @media (max-width: 768px) {
+      .exp-grid { grid-template-columns: 1fr; gap: 48px; }
+      .exp-row { flex-direction: column; gap: 4px; }
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25%       { transform: rotate(3deg); }
+      75%       { transform: rotate(-3deg); }
+    }
+    .artwork-frame { cursor: pointer; }
+    .artwork-frame:hover .artwork-inner {
+      animation: wiggle 0.4s ease-in-out;
+    }
+
+    .bio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+      align-items: start;
+    }
+    .bio-grid .bio-text { grid-column: span 2; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.4fr 1fr;
+      gap: 16px;
+    }
+
+    .about-section {
+      padding: 60px 48px 0;
+    }
+
+    .cards-section {
+      padding: 0 48px;
+    }
+
+    .skills-section {
+      padding: 0 48px 10px;
+    }
+
+    @media (max-width: 768px) {
+      .about-section { padding: 40px 20px 0; }
+      .cards-section { padding: 0 20px; }
+      .skills-section { padding: 0 20px 10px; }
+
+      .bio-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .bio-grid .bio-text { grid-column: span 1; }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+function EWNav({ activePage = 'work' }) {
+  return (
+    <nav style={{
+      width: '100%', height: 56, background: '#EEEDF0',
+      borderBottom: '1px solid rgba(28,28,34,0.07)',
+      display: 'flex', alignItems: 'center',
+      justifyContent: 'space-between', padding: '0 24px',
+      position: 'sticky', top: 0, zIndex: 100, boxSizing: 'border-box'
+    }}>
+      <a href="index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <img src="assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
+      </a>
+      <div style={{ display: 'flex', gap: 24 }}>
+        {[
+          ['work',   'Work', 'index.html#case-studies'],
+          ['about',  'About',        'about.html'],
+          ['resume', 'Resume',       'assets/sophia-resume.pdf'],
+        ].map(([id, label, href]) =>
+          <a key={id} href={href}
+            target={id === 'resume' ? '_blank' : undefined}
+            rel={id === 'resume' ? 'noopener noreferrer' : undefined}
+            style={{
+              fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
+              letterSpacing: '0.01em', textDecoration: 'none',
+              color: activePage === id ? '#1C1C22' : '#7A7A85', transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => e.target.style.color = '#1C1C22'}
+            onMouseLeave={e => e.target.style.color = activePage === id ? '#1C1C22' : '#7A7A85'}>
+            {label}
+          </a>
+        )}
+      </div>
+    </nav>
+  );
+}
+
+function EWFooter() {
+  return (
+    <footer style={{ background: '#1C1C23', boxShadow: '0px 4px 4px rgba(0,0,0,0.25)' }}>
+      <div style={{
+        borderTop: '1px solid rgba(255,255,255,0.08)', padding: '40px 36px',
+        display: 'flex', justifyContent: 'space-between',
+        alignItems: 'flex-start', flexWrap: 'wrap', gap: 24
+      }}>
+        <img src="assets/sophia-logo-white.png" alt="sophia alfred"
+          style={{ height: 32, display: 'block', opacity: 0.9 }} />
+        <div style={{ display: 'flex', gap: 48 }}>
+          {[
+            { heading: 'say hi', links: [
+              { label: 'LinkedIn', href: 'https://linkedin.com/in/sophiaalfred' },
+              { label: 'Email',    href: 'mailto:sophiacalfred@gmail.com' },
+              { label: 'Resume',   href: 'assets/sophia-resume.pdf', external: true },
+            ]},
+            { heading: 'work', links: [
+              { label: 'The Living Record', href: 'case-studies/living-record.html' },
+              { label: 'Garden Tours',      href: 'case-studies/garden-tours.html' },
+              { label: 'Yogapedia',         href: 'case-studies/yogapedia.html' },
+              { label: 'My Art Gallery', href: '#gallery' },
+            ]},
+          ].map(col =>
+            <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{
+                fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 11,
+                color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em',
+                textTransform: 'lowercase', marginBottom: 2,
+              }}>{col.heading}</div>
+              {col.links.map(l =>
+                <a key={l.label} href={l.href}
+                  target={l.external ? '_blank' : undefined}
+                  rel={l.external ? 'noopener noreferrer' : undefined}
+                  style={{
+                    fontFamily: 'Manrope, sans-serif', fontSize: 13,
+                    color: 'rgba(255,255,255,0.35)', letterSpacing: '0.01em',
+                    textDecoration: 'none', transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.85)'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.35)'}>
+                  {l.label}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{
+        padding: '0 36px 24px', fontFamily: 'Manrope, sans-serif',
+        fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.02em',
+      }}>© 2026 Sophia Alfred</div>
+    </footer>
+  );
+}
+
+const EXPERIENCE = [
+  { org: 'Cloudflare',  role: 'Product Design Intern',  year: '2026' },
+  { org: 'Memento',     role: 'Product Design',   year: '2025' },
+
+];
+
+const EDUCATION = [
+  { org: 'City, University of London', role: 'MSc Human Computer Interaction Design', year: '' },
+  { org: 'Tufts University',           role: 'BA Architectural Studies',               year: '' },
+];
+
+// Reference canvas: 1538×793 (mockup dimensions).
+// left/top = % of canvas. width = % of canvas width (height flows naturally from image ratio).
+const ARTWORKS = [
+  { file: 'moms-backyard.png',       title: "Mom's Backyard",       year: '2022', materials: 'Acrylic on canvas', left:  6.48, top:  2.50, width:  9.75 }, // 1  ↑ moved up
+  { file: 'Sylvie.png',              title: 'Sylvie in the Sun',               year: '2021', materials: 'Acrylic on canvas', left: 19, top:  5, width: 17.36 }, // 2  ↑ moved up
+  { file: 'green-apples-study.png',  title: 'Green Apples Study',   year: '2020', materials: 'Acrylic on canvas', left: 40, top:  0.00, width: 18.58 }, // 3
+  { file: 'Too-bright.png',          title: 'Too Bright',           year: '2022', materials: 'Acrylic on canvas', left: 62.72, top:  8.20, width: 10.64 }, // 4
+  { file: 'addy-and-aria.png',       title: 'Addy and Aria',        year: '2020', materials: 'Vector art, Adobe Illustrator', left: 79.15, top:  0.50, width: 12.05 }, // 5  ↑ moved up
+  { file: 'roller-girls.png',        title: 'Roller Girls',         year: '2020', materials: 'Vector art, Adobe Illustrator', left:  3.50, top: 32.16, width: 15.45 }, // 6  ← scaled ×0.8
+  { file: 'pink-hair-dont-care.png', title: "Pink Hair, Don't Care", year: '2025', materials: 'Acrylic on canvas', left: 20.2, top: 37.83, width:  9.5 }, // 7  ← scaled ×0.8
+  { file: 'tonsil-stones.png',       title: 'Tonsil Stones',        year: '2021', materials: 'Acrylic on canvas', left: 37.96, top: 38.46, width:  8.78 }, // 8
+  { file: 'a-girl-and-her-dog.png',  title: 'A Girl and Her Dog',   year: '2024', materials: 'Vector art, Adobe Illustrator', left: 51.29, top: 34.05, width: 11.70 }, // 9
+  { file: 'shades-on-masks-up.png',  title: 'Shades On, Masks Up',  year: '2020', materials: 'Acrylic on paper', left: 65, top: 38.00, width: 10.29 }, // 10 ↑ moved up
+  { file: 'Thinking.png',            title: 'Thinking',             year: '2025', materials: 'Mixed media', left: 77.5, top: 22.89, width: 18.65 }, // 11
+  { file: 'Tufts.png',               title: 'Tufts, Miner Hall',    year: '2021', materials: 'Acrylic on canvas', left:  5.10, top: 67.25, width:  11 }, // 12
+  { file: 'D-sarazhin-study.png',    title: 'D. Sarazhin Study',    year: '2025', materials: 'Pastel crayons & acrylic on paper', left: 18.46, top: 66.05, width: 10.64 }, // 13
+  { file: 'self-portrait.png',       title: 'Self Portrait',        year: '2021', materials: 'Acrylic on canvas', left: 30.66, top: 31.16, width: 19.5 }, // 14
+  { file: 'Panda.png',               title: 'Panda (The Cat)',      year: '2024', materials: 'Acrylic on canvas', left: 35.54, top: 75.34, width: 10.29 }, // 15
+  { file: 'under-water.png',         title: 'Under Water',          year: '2025', materials: 'Acrylic on paper', left: 64, top: 62.64, width: 11.70 }, // 16
+  { file: 'richard-and-sophie.png',  title: 'Richard and Sophie',   year: '2026', materials: 'Vector art, Adobe Illustrator', left: 80.82, top: 68.05, width: 10.39 }, // 17
+   { file: 'tonsil-stones.png',  title: 'Tonsil Stones',   year: '2021', materials: 'Acrylic on Canvas', left: 52.54, top: 66.84, width: 8 }, // 17
+];
+
+function ArtworkModal({ artwork, onClose }) {
+  if (!artwork) return null;
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 1000, padding: 24,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: '#FAF7F2', borderRadius: 4, position: 'relative',
+        display: 'flex', maxWidth: 900, width: '100%', maxHeight: '85vh',
+        overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+      }}>
+        <div style={{ width: '55%', flexShrink: 0, background: '#EDE8DF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <img src={`assets/about/wall/${artwork.file}`} alt={artwork.title}
+            style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', display: 'block' }} />
+        </div>
+        <div style={{ flex: 1, padding: '48px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
+          <h2 style={{ fontFamily: "'Self Modern', serif", fontWeight: 400, fontSize: 28, color: '#1C1C22', lineHeight: 1.2, marginBottom: 4 }}>
+            {artwork.title}
+          </h2>
+          {artwork.year && (
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: '#A8A8B3', letterSpacing: '0.06em' }}>
+              {artwork.year}
+            </span>
+          )}
+          {artwork.materials && (
+            <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: 14, color: '#7A7A85', lineHeight: '22px' }}>
+              {artwork.materials}
+            </span>
+          )}
+        </div>
+        <button onClick={onClose} style={{
+          position: 'absolute', top: 14, right: 16,
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontFamily: 'Manrope', fontSize: 28, color: '#A8A8B3', lineHeight: 1, padding: 4,
+        }}>×</button>
+      </div>
+    </div>
+  );
+}
+
+function GalleryWall() {
+  const [selected, setSelected] = React.useState(null);
+
+  return (
+    <>
+      <section id="gallery" style={{
+          position: 'relative',
+          backgroundImage: "url('assets/about/wall/wallpaper.png')",
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          paddingTop: 48,
+        }}>
+      <div
+  style={{
+    fontFamily: "'Self Modern', serif",
+    fontWeight: 400,
+    fontSize: 'clamp(28px, 3.5vw, 48px)',
+    lineHeight: 1.1,
+    color: '#016FEB',
+    marginBottom: 16,
+    padding: '0 48px 32px',
+  }}
+>
+  <div style={{ marginBottom: 12 }}>
+  My Art Gallery
+</div>
+
+  <p
+    className="hero-sub"
+    style={{
+      fontFamily: 'Manrope, sans-serif',
+      fontWeight: 400,
+      fontSize: 14,
+      lineHeight: '21px',
+      color: '#5A5A65',
+    }}
+  >
+    Beyond product design I love art. Here's some of my past work.
+  </p>
+</div>
+
+        {/* Canvas ratio: 793/1538 = 51.56% */}
+        <div style={{ position: 'relative', width: '100%', paddingTop: '51.56%' }}>
+          {ARTWORKS.map(art => (
+            <div key={art.file}
+              className="artwork-frame"
+              onClick={() => setSelected(art)}
+              style={{
+                position: 'absolute',
+                left: `${art.left}%`,
+                top: `${art.top}%`,
+                width: `${art.width}%`,
+              }}>
+              <div className="artwork-inner">
+                <img
+                  src={`assets/about/wall/${art.file}`}
+                  alt={art.title}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <ArtworkModal artwork={selected} onClose={() => setSelected(null)} />
+    </>
+  );
+}
+
+const mono = { fontFamily: "'IBM Plex Mono', monospace" };
+const label = { ...mono, fontWeight: 500, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' };
+
+function AboutPage() {
+  React.useEffect(() => {
+    if (window.location.hash) {
+      const el = document.querySelector(window.location.hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F4EFE4' }}>
+      <EWNav activePage="about" />
+
+      {/* ── HERO ── */}
+      <section className="about-section" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
+
+        {/* Big name */}
+        <div className="hero-name" style={{
+          borderBottom: '1px solid rgba(28,28,34,0.1)',
+          paddingBottom: 32, marginBottom: 48,
+        }}>
+          <div style={{
+            fontFamily: "'Inter', sans-serif", fontWeight: 300,
+            fontSize: 'clamp(64px, 10vw, 120px)',
+            lineHeight: 0.92, letterSpacing: '-0.02em', color: '#1C1C22',
+          }}>
+            sophia<br/>
+            <span style={{ color: '#046EEB' }}>alfred.</span>
+          </div>
+          <div style={{ ...mono, fontWeight: 500, fontSize: 13, letterSpacing: '0.08em', color: '#7A7A85', marginTop: 20, textTransform: 'uppercase' }}>
+            product designer • MSc in HCI
+          </div>
+        </div>
+
+        {/* Bio + Currently */}
+        <div className="hero-sub bio-grid">
+          <div className="bio-text">
+            <p style={{
+              fontFamily: "'Inter', sans-serif", fontWeight: 300,
+              fontSize: 'clamp(17px, 1.8vw, 24px)', lineHeight: 1.5,
+              letterSpacing: '0.01em', color: '#1C1C22',
+            }}>
+              I'm a Product Design Intern at Cloudflare, where I craft visuals for complex problems. I care about prototyping, visual storytelling, and making designs that work as well as they look. I studied architecture at Tufts, then HCI at City, UoL... which is a roundabout way of saying I think about space and systems in everything I make.
+            </p>
+          </div>
+          <div style={{ background: '#F2E08A', borderRadius: 2, padding: '24px 28px' }}>
+            <div style={{ ...label, color: '#575E07', marginBottom: 14 }}>currently</div>
+            <div style={{ ...mono, fontWeight: 500, fontSize: 14, lineHeight: 1.6, color: '#1C1C22' }}>
+              Product Design Intern<br/>
+              <span style={{ color: '#575E07', fontWeight: 400 }}>@ Cloudflare</span>
+            </div>
+            <div style={{ ...mono, fontWeight: 400, fontSize: 11, color: '#575E07', letterSpacing: '0.04em', marginTop: 16 }}>2026</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CARDS GRID ── */}
+      <section className="cards-section cards-grid" style={{
+        maxWidth: 1400, margin: '0 auto', width: '100%', marginBottom: 16,
+      }}>
+        {/* Experience */}
+        <div style={{ background: '#1C1C22', borderRadius: 2, padding: '32px 36px' }}>
+          <div style={{ ...label, color: '#7A7A85', marginBottom: 28 }}>experience</div>
+          {[
+            { co: 'Cloudflare', role: 'Product Design Intern', year: '2026' },
+            { co: 'Memento',    role: 'Product Design',        year: '2025' },
+          ].map((item, i) => (
+            <div key={i} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+              padding: '18px 0',
+              borderBottom: i < 1 ? '1px solid rgba(255,255,255,0.07)' : 'none',
+            }}>
+              <div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: 22, color: '#F4EFE4', letterSpacing: '-0.01em' }}>{item.co}</div>
+                <div style={{ ...mono, fontWeight: 400, fontSize: 12, color: '#7A7A85', marginTop: 4 }}>{item.role}</div>
+              </div>
+              <div style={{ ...mono, fontWeight: 500, fontSize: 12, color: '#7A7A85', letterSpacing: '0.06em' }}>{item.year}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Education */}
+        <div style={{ background: '#ED5632', borderRadius: 2, padding: '32px 36px' }}>
+          <div style={{ ...label, color: 'rgba(255,255,255,0.6)', marginBottom: 28 }}>education</div>
+          {[
+            { school: 'City, University of London', degree: 'MSc Human Computer Interaction Design' },
+            { school: 'Tufts University',     degree: 'BA Architectural Studies' },
+          ].map((item, i) => (
+            <div key={i} style={{
+              padding: '18px 0',
+              borderBottom: i < 1 ? '1px solid rgba(255,255,255,0.15)' : 'none',
+            }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: 22, color: '#fff', letterSpacing: '-0.01em' }}>{item.school}</div>
+              <div style={{ ...mono, fontWeight: 400, fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 5, lineHeight: 1.5 }}>{item.degree}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* When not designing */}
+        <div style={{ background: '#046EEB', borderRadius: 2, padding: '32px 28px' }}>
+          <div style={{ ...label, color: 'rgba(255,255,255,0.6)', marginBottom: 28 }}>in my free time I'm…</div>
+          {['working on sewing projects', 'playing water polo', 'doing yoga', 'painting portriats'].map((fact, i) => (
+            <div key={i} style={{
+              fontFamily: "'Inter', sans-serif", fontWeight: 300,
+              fontSize: 15, color: '#fff', lineHeight: 1.35,
+              padding: '14px 0',
+              borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.12)' : 'none',
+            }}>{fact}</div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── SKILLS STRIP ── */}
+      <section className="skills-section" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
+        <div style={{
+          background: '#EEEDF0', borderRadius: 2, padding: '24px 36px',
+          display: 'flex', alignItems: 'center', gap: 48, flexWrap: 'wrap',
+        }}>
+          <div style={{ ...label, color: '#7A7A85', flexShrink: 0 }}>tools &amp; craft</div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', flex: 1 }}>
+            {['Figma', 'Prototyping', 'Visual Design', 'Sketching', 'User Research', 'Illustration', 'Vibe Coding', 'HTML / CSS',].map(skill => (
+              <span key={skill} style={{
+                ...mono, fontWeight: 400, fontSize: 12, color: '#5A5A65', letterSpacing: '0.04em',
+                padding: '6px 14px', border: '1px solid rgba(28,28,34,0.12)', borderRadius: 2,
+              }}>{skill}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <GalleryWall />
+      <EWFooter />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<AboutPage />);
+</script>
+</body>
+</html>

@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>The Living Record — Sophia Alfred</title>
+  <link rel="icon" href="../assets/favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    @font-face {
+      font-family: 'Self Modern';
+      src: url('../assets/fonts/Self_Modern_Regular.ttf') format('truetype');
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: #FFFBF4; color: #1C1C22; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #FFFBF4; }
+    ::-webkit-scrollbar-thumb { background: #A8A8B3; border-radius: 3px; }
+
+    .sidenav {
+      position: sticky; top: 56px;
+      width: 199px; min-width: 199px;
+      height: calc(100vh - 56px);
+      padding: 18px;
+      background: #FFFBF4;
+      border-right: 1px solid rgba(0,0,0,0.06);
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0; align-self: flex-start;
+    }
+    .sidenav-top { display: flex; flex-direction: column; gap: 12px; }
+    .sidenav-link {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 400;
+      font-size: 11px; letter-spacing: 0.06em; line-height: 165%;
+      text-transform: uppercase; text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+      color: #CCCCCC; transition: color 0.15s ease;
+    }
+    .sidenav-link.active { color: #5A5A65; }
+    .sidenav-link:hover { color: #5A5A65; }
+    .sidenav-link.home { color: #5A5A65; margin-bottom: 10px; }
+    .sidenav-link svg { flex-shrink: 0; }
+
+    .content-pad { padding: 0 clamp(40px, 7vw, 120px); }
+
+    .expandable-img { cursor: zoom-in; transition: opacity 0.15s; }
+    .expandable-img:hover { opacity: 0.9; }
+
+    .img-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); align-items: center; justify-content: center;
+    }
+    .img-overlay.active { display: flex; }
+    .img-overlay-close {
+      position: absolute; top: 20px; right: 24px;
+      background: none; border: none; color: #fff;
+      font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+      cursor: pointer; letter-spacing: 0.05em; opacity: 0.7;
+    }
+    .img-overlay-close:hover { opacity: 1; }
+    #img-overlay-img { max-width: 90vw; max-height: 72vh; object-fit: contain; cursor: grab; border-radius: 4px; }
+
+    .img-overlay-center {
+      display: flex; flex-direction: column; align-items: center;
+      max-width: 90vw;
+    }
+    .img-overlay-caption-text {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      color: rgba(255,255,255,0.9); letter-spacing: 0.05em;
+      text-align: center; margin-top: 14px; max-width: 560px;
+      line-height: 1.65;
+    }
+    .img-overlay-prev, .img-overlay-next {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7); font-size: 26px;
+      width: 44px; height: 44px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s; padding: 0; line-height: 1;
+    }
+    .img-overlay-prev { left: 20px; }
+    .img-overlay-next { right: 20px; }
+    .img-overlay-prev:hover, .img-overlay-next:hover {
+      background: rgba(255,255,255,0.18); color: #fff;
+    }
+    .img-overlay-prev.hidden, .img-overlay-next.hidden { display: none; }
+
+    .moodboard-tab {
+      cursor: pointer; border: none; text-align: center; border-radius: 4px;
+      padding: 16px 12px; transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      position: relative;
+    }
+    .moodboard-tab:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+      filter: brightness(0.96);
+    }
+    .moodboard-tab:active { transform: translateY(-1px); }
+    .moodboard-tab.is-active {
+      box-shadow: inset 0 0 0 1px #1C1C22;
+    }
+    .moodboard-tab.is-active::after {
+      content: ''; position: absolute; bottom: -10px; left: 50%;
+      transform: translateX(-50%);
+      border-left: 7px solid transparent; border-right: 7px solid transparent;
+      border-top: 8px solid #1C1C22;
+    }
+    @keyframes moodboardIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .moodboard-img-enter { animation: moodboardIn 0.3s ease forwards; }
+
+    @media (max-width: 768px) {
+      .sidenav { display: none; }
+    }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- Image overlay -->
+<div class="img-overlay" id="img-overlay">
+  <button class="img-overlay-close" id="img-overlay-close">✕ Close</button>
+  <button class="img-overlay-prev" id="img-overlay-prev">‹</button>
+  <div class="img-overlay-center">
+    <img id="img-overlay-img" src="" alt="">
+    <div id="img-overlay-caption" class="img-overlay-caption-text"></div>
+  </div>
+  <button class="img-overlay-next" id="img-overlay-next">›</button>
+</div>
+
+<div id="root"></div>
+<script type="text/babel">
+
+function EWNav({ activePage = 'work' }) {
+  const [scrolled, setScrolled] = React.useState(false);
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  const activeColor   = scrolled ? '#1C1C22' : 'rgba(255,255,255,0.95)';
+  const inactiveColor = scrolled ? '#7A7A85' : 'rgba(255,255,255,0.55)';
+  const hoverColor    = scrolled ? '#1C1C22' : 'rgba(255,255,255,0.95)';
+  return (
+    <nav style={{
+      width:'100%', height:56,
+      background: scrolled ? 'rgba(255,251,244,0.92)' : 'rgba(0,0,0,0.01)',
+      backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)',
+      borderBottom: scrolled ? '1px solid rgba(28,28,34,0.07)' : '1px solid rgba(255,255,255,0.08)',
+      display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
+      position:'fixed', top:0, zIndex:100, boxSizing:'border-box',
+      transition:'background 0.35s ease, border-color 0.35s ease',
+    }}>
+      <a href="../index.html" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
+        <img src={scrolled ? '../assets/sophia-logo.png' : '../assets/sophia-logo-white.png'}
+          alt="sophia alfred" style={{ height:28, display:'block', transition:'opacity 0.2s' }} />
+      </a>
+      <div style={{ display:'flex', gap:24 }}>
+        {[['work','Work','../index.html#case-studies'],['about','About','../about.html'],['resume','Resume','../assets/sophia-resume.pdf']].map(([id,label,href]) =>
+          <a key={id} href={href} target={id==='resume'?'_blank':undefined} rel={id==='resume'?'noopener noreferrer':undefined}
+            style={{ fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:14, letterSpacing:'0.01em',
+              textDecoration:'none', color: activePage===id ? activeColor : inactiveColor, transition:'color 0.2s' }}
+            onMouseEnter={e=>e.target.style.color=hoverColor}
+            onMouseLeave={e=>e.target.style.color=activePage===id?activeColor:inactiveColor}>
+            {label}
+          </a>
+        )}
+      </div>
+    </nav>
+  );
+}
+
+function EWFooter() {
+  return (
+    <footer style={{ background:'#1C1C23', boxShadow:'0px 4px 4px rgba(0,0,0,0.25)' }}>
+      <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', padding:'40px 36px',
+        display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:24 }}>
+        <img src="../assets/sophia-logo-white.png" alt="sophia alfred" style={{ height:32, display:'block', opacity:0.9 }} />
+        <div style={{ display:'flex', gap:48 }}>
+          {[
+            { heading:'say hi', links:[
+              {label:'LinkedIn',href:'https://linkedin.com/in/sophiaalfred'},
+              {label:'Email',href:'mailto:sophiacalfred@gmail.com'},
+              {label:'Resume',href:'../assets/sophia-resume.pdf',external:true},
+            ]},
+            { heading:'work', links:[
+              {label:'The Living Record',href:'living-record.html'},
+              {label:'Garden Tours',href:'garden-tours.html'},
+              {label:'Yogapedia',href:'yogapedia.html'},
+              {label:'My Art Gallery',href:'../about.html#gallery'},
+            ]},
+          ].map(col =>
+            <div key={col.heading} style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              <div style={{ fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:11,
+                color:'rgba(255,255,255,0.5)', letterSpacing:'0.08em', textTransform:'lowercase', marginBottom:2 }}>{col.heading}</div>
+              {col.links.map(l =>
+                <a key={l.label} href={l.href} target={l.external?'_blank':undefined} rel={l.external?'noopener noreferrer':undefined}
+                  style={{ fontFamily:'Manrope, sans-serif', fontSize:13, color:'rgba(255,255,255,0.35)',
+                    letterSpacing:'0.01em', textDecoration:'none', transition:'color 0.2s' }}
+                  onMouseEnter={e=>e.target.style.color='rgba(255,255,255,0.85)'}
+                  onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>
+                  {l.label}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{ padding:'0 36px 24px', fontFamily:'Manrope, sans-serif',
+        fontSize:11, color:'rgba(255,255,255,0.2)', letterSpacing:'0.02em' }}>© 2026 Sophia Alfred</div>
+    </footer>
+  );
+}
+
+const SECTION_IDS = ['the-problem','discover','define','develop','final-solution','reflection'];
+const NAV_LINKS = [
+  { id:'the-problem',    label:'The Problem' },
+  { id:'discover',       label:'Discover' },
+  { id:'define',         label:'Define' },
+  { id:'develop',        label:'Develop' },
+  { id:'final-solution', label:'Solution' },
+  { id:'reflection',     label:'Reflection' },
+];
+
+const ArrowLeft = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+    <path d="M7.5 2L3.5 6L7.5 10" stroke="#5A5A65" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+const ArrowUp = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform:'rotate(90deg)' }}>
+    <path d="M7.5 2L3.5 6L7.5 10" stroke="#5A5A65" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+function SideNav() {
+  const [active, setActive] = React.useState('the-problem');
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin:'-56px 0px -70% 0px', threshold:0 });
+    SECTION_IDS.forEach(id => { const el = document.getElementById(id); if (el) observer.observe(el); });
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <aside className="sidenav">
+      <div className="sidenav-top">
+        <a href="../index.html" className="sidenav-link home"><ArrowLeft /> HOME</a>
+        {NAV_LINKS.map(({id,label}) => (
+          <a key={id} href={`#${id}`} className={`sidenav-link${active===id?' active':''}`}>{label}</a>
+        ))}
+      </div>
+      <a href="#the-problem" className="sidenav-link home"
+        onClick={e=>{ e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); }}>
+        <ArrowUp /> BACK TO TOP
+      </a>
+    </aside>
+  );
+}
+
+const mono = { fontFamily:"'IBM Plex Mono', monospace" };
+const sectionLabel = { ...mono, fontSize:11, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:8, display:'block' };
+const sectionHeading = { fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:'clamp(16px, 1.6vw, 20px)', lineHeight:1.35, color:'#1C1C22', marginBottom:12 };
+const bodyText = { fontFamily:'Manrope, sans-serif', fontWeight:400, fontSize:14, lineHeight:'21px', color:'#7A7A85' };
+const imgCaption = { fontFamily:"'IBM Plex Mono', monospace", fontSize:10, color:'#A8A8B3', letterSpacing:'0.06em', marginTop:8, display:'block' };
+const divider = { borderTop:'1px solid rgba(28,28,34,0.08)', margin:'48px 0' };
+
+function PhaseBadge({ phase }) {
+  return (
+    <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(237,86,50,0.1)', borderRadius:4, padding:'6px 12px', marginBottom:20 }}>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="7" y="1" width="8" height="8" rx="1" transform="rotate(45 7 1)" fill="#ED5632" opacity="0.7"/>
+      </svg>
+      <span style={{ ...mono, fontSize:10, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632' }}>{phase}</span>
+    </div>
+  );
+}
+
+function InsightCard({ number, text }) {
+  return (
+    <div style={{ display:'flex', gap:16, alignItems:'flex-start', paddingBottom:16, borderBottom:'1px solid rgba(28,28,34,0.07)' }}>
+      <span style={{ ...mono, fontSize:11, color:'#ED5632', minWidth:24, paddingTop:1 }}>{number}</span>
+      <span style={{ fontFamily:'Manrope, sans-serif', fontSize:14, color:'#5A5A65', lineHeight:'21px' }}>{text}</span>
+    </div>
+  );
+}
+
+// Expandable image — wires up the plain-HTML overlay outside React
+function ExpandableImg({ src, alt, style = {} }) {
+  const handleClick = () => {
+    if (window.openGallery) { window.openGallery([{ src }], 0); }
+    else {
+      const overlay = document.getElementById('img-overlay');
+      const img     = document.getElementById('img-overlay-img');
+      if (overlay && img) { img.src = src; overlay.classList.add('active'); }
+    }
+  };
+  return (
+    <img src={src} alt={alt} className="expandable-img"
+      onClick={handleClick}
+      style={{ display:'block', borderRadius:4, ...style }} />
+  );
+}
+
+const MOODBOARD_THEMES = [
+  { theme:'Research',       color:'#E8EFF8', img:'../assets/living-record/research-moodboard.jpg',
+    caption:'Research moodboard — ecological data, urban nature, and museum precedents' },
+  { theme:'Education',      color:'#DCF0DC', img:'../assets/living-record/education-moodboard.jpg',
+    caption:'Education moodboard — visitor learning, hands-on interaction, and accessibility' },
+  { theme:'Leisure',        color:'#C8D9A0', img:'../assets/living-record/leisure-moodboard.jpg',
+    caption:'Leisure moodboard — visitor experience, movement through space, and dwell time' },
+  { theme:'Museum Mission', color:'#F5EFE0', img:'../assets/living-record/museum-mission-moodboard.jpg',
+    caption:'Museum Mission moodboard — conservation, community, and institutional identity' },
+  { theme:'Environmental',  color:'#E8F0E8', img:'../assets/living-record/environmental-moodboard.jpg',
+    caption:'Environmental moodboard — climate data, biodiversity, and ecological systems' },
+];
+
+function LivingRecordPage() {
+  const [activeTheme, setActiveTheme] = React.useState('Research');
+  return (
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#FFFBF4' }}>
+      <EWNav activePage="work" />
+
+      {/* COVER */}
+      <div style={{ width:'100%', aspectRatio:'16/7', background:'#C8D9A0', position:'relative', overflow:'hidden' }}>
+        <video src="../assets/living-record-cover-full.mov" autoPlay muted loop playsInline
+          style={{ width:'100%', height:'100%', objectFit:'cover', position:'absolute', inset:0 }} />
+        <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.45)' }} />
+        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
+          justifyContent:'center', alignItems:'center', padding:'clamp(24px,4vw,60px)', textAlign:'center' }}>
+          <div style={{ ...mono, fontSize:11, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'rgba(255,255,255,0.55)', marginBottom:12 }}>
+            Exhibition Design · London Natural History Museum
+          </div>
+          <h1 style={{ fontFamily:"'Self Modern', serif", fontWeight:400, fontSize:'clamp(32px,5vw,72px)', color:'#FFFFFF', lineHeight:1.05, margin:0 }}>
+            The Living Record
+          </h1>
+        </div>
+      </div>
+
+      <div style={{ display:'flex', flex:1 }}>
+        <SideNav />
+        <main style={{ flex:1, minWidth:0 }}>
+
+          {/* ── THE PROBLEM ── */}
+          <section id="the-problem" style={{ paddingTop:48, paddingBottom:48 }}>
+            <div className="content-pad">
+              <div style={{ ...mono, fontSize:11, letterSpacing:'0.08em', textTransform:'uppercase', color:'#A8A8B3', marginBottom:8 }}>
+                Exhibition Design · London Natural History Museum
+              </div>
+              <h2 style={{ fontFamily:"'Self Modern', serif", fontWeight:400, fontSize:'clamp(24px,3.5vw,44px)', color:'#1C1C22', lineHeight:1.1, marginBottom:24 }}>
+                The Living Record
+              </h2>
+
+              {/* Meta strip — equal columns */}
+              <div style={{ display:'flex', justifyContent:'space-between',
+                borderTop:'1px solid rgba(28,28,34,0.1)', paddingTop:16, marginBottom:32 }}>
+                {[
+                  { label:'Timeline', value:'Jan – Apr 2026' },
+                  { label:'My Role',  value:'Interaction Designer' },
+                  { label:'Team',     value:'Sydney DeLacey (UX Engineer)\nYemisi Agbebi (UX Researcher)' },
+                  { label:'Tools',    value:'Figma\nAdobe Firefly\nProcreate' },
+                ].map(({ label, value }) => (
+                  <div key={label}>
+                    <div style={{ ...mono, fontSize:10, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:6 }}>{label}</div>
+                    <div style={{ fontFamily:'Manrope, sans-serif', fontSize:13, color:'#5A5A65', lineHeight:1.65, whiteSpace:'pre-line' }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+
+              <span style={sectionLabel}>The Problem</span>
+              <h3 style={{ fontFamily:'Manrope, sans-serif', fontWeight:400, fontSize:'clamp(15px,1.5vw,18px)', lineHeight:1.55, color:'#1C1C22', marginBottom:16 }}>
+                The London Natural History Museum has installed 27 sensor sites in their garden, but how will the public interact with this rich, new data set?
+              </h3>
+              <p style={{ ...bodyText, marginBottom:16 }}>
+                The Natural History Museum's Urban Nature Project has embedded 27 sensors across their garden, collecting ecological data 24/7: environment DNA (eDNA), sounds, atmospheric conditions, and more. Our team worked through the double diamond framework, using divergent methods such as brainwriting, sketching, and community exploration to shape our concept.
+              </p>
+              
+              <a href="#final-solution" style={{
+                display:'inline-flex', alignItems:'center', gap:10,
+                background:'rgba(237,86,50,0.10)', borderRadius:5, padding:'10px 18px', textDecoration:'none',
+              }}>
+                <span style={{ ...mono, fontSize:11, fontWeight:500, letterSpacing:'0.08em', textTransform:'uppercase', color:'#ED5632' }}>Jump to Solution</span>
+                <span style={{ color:'#ED5632', fontSize:14, lineHeight:1 }}>↓</span>
+              </a>
+            </div>
+          </section>
+
+          <div className="content-pad"><div style={divider} /></div>
+
+          {/* ── DISCOVER ── */}
+          <section id="discover" style={{ paddingBottom:48 }}>
+            <div className="content-pad">
+              <PhaseBadge phase="Discover" />
+              <span style={sectionLabel}>Research</span>
+              <h3 style={sectionHeading}>Understanding the NHM gardens and their visitors</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                Before designing anything, we needed to understand the problem space. Our team compiled research on the Natural History Museum, the Urban Nature Project, and the garden.
+              </p>
+              <p style={{ ...bodyText, marginBottom:24 }}>
+                From there, we ran a workshop asking: <em style={{ color:'#5A5A65', marginRight:'0.25em' }}>what is the function of the NHM gardens?</em>We eachindependently wrote answers and together, we grouped our over 60 responses into five themes and created corresponding moodboards. Those moodboards served as visual inspriation that we returned to throughout the project.
+              </p>
+
+              {/* Moodboard tabs */}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:18 }}>
+                {MOODBOARD_THEMES.map(({ theme, color }) => (
+                  <button
+                    key={theme}
+                    className={`moodboard-tab${activeTheme === theme ? ' is-active' : ''}`}
+                    onClick={() => setActiveTheme(theme)}
+                    style={{ background: color }}
+                  >
+                    <span style={{ fontFamily:'Manrope, sans-serif', fontSize:12, fontWeight: activeTheme === theme ? 600 : 500, color:'#1C1C22' }}>{theme}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Active moodboard image */}
+              {MOODBOARD_THEMES.filter(t => t.theme === activeTheme).map(({ theme, img, caption }) => (
+                <div key={theme} className="moodboard-img-enter" style={{ marginBottom:0 }}>
+                  <img src={img} alt={`${theme} moodboard`}
+                    style={{ width:'100%', borderRadius:4, display:'block' }} />
+                  <span style={imgCaption}>{caption}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="content-pad"><div style={divider} /></div>
+
+          {/* ── DEFINE ── */}
+          <section id="define" style={{ paddingBottom:48 }}>
+            <div className="content-pad">
+              <PhaseBadge phase="Define" />
+              <span style={sectionLabel}>Ideation & Synthesis</span>
+              <h3 style={sectionHeading}>From 60 answers to one direction</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                With a broad understanding established, we ran a brainwriting workshop to begin ideating possible solutions. Each person wrote ideas for two minutes, then passed their paper to the next person to build on. 
+              </p>
+              
+
+              {/* Side by side: brainwrite2 + affinity diagram — matched height, centered crop */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:28 }}>
+                <div>
+                  <div style={{ height:280, borderRadius:4, overflow:'hidden' }}>
+                    <img src="../assets/living-record/brainwrite2.png" alt="Brainwriting exercise"
+                      style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center', display:'block' }} />
+                  </div>
+                  <span style={imgCaption}>Brainwriting in progress</span>
+                </div>
+                <div>
+                  <div style={{ height:280, borderRadius:4, overflow:'hidden' }}>
+                    <img src="../assets/living-record/brain-write-affinity-diagram.png" alt="Brainwriting affinity clusters"
+                      style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center', display:'block' }} />
+                  </div>
+                  <span style={imgCaption}>Outputs affinity clustered by theme</span>
+                </div>
+              </div>
+
+              <p style={{ ...bodyText, marginBottom:28 }}>
+                From the brainwrite, we created an affinitiy diagram of the different ideas. Various categories emerged such as digital twins, interactive experiences, data visualization, and VR. The ideas that excited us most were the ones that put visitors <em style={{ color:'#5A5A65' }}>inside</em> the data, not just looking at it. The winning concept: 
+              </p>
+
+              {/* Lightbulb moment */}
+              <div style={{ background:'#F5F3EE', borderRadius:6, padding:'28px 32px', display:'flex', alignItems:'flex-start', gap:20, marginBottom:32 }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                  stroke="#ED5632" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, marginTop:2 }}>
+                  <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                  <path d="M9 18h6"/><path d="M10 22h4"/>
+                </svg>
+                <div>
+                  <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:8 }}>The Direction</div>
+                  <p style={{ fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:'clamp(14px,1.4vw,17px)', color:'#1C1C22', lineHeight:1.6, margin:0 }}>
+                    An immersive, interactive exhibit inside the Natural History Museum itself.
+                  </p>
+                </div>
+              </div>
+
+              {/* Problem statement */}
+              <div style={{ background:'#1C1C22', borderRadius:6, padding:'28px 32px' }}>
+                <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'rgba(255,255,255,0.65)', marginBottom:12 }}>Problem Statement</div>
+                <p style={{ fontFamily:'Manrope, sans-serif', fontWeight:400, fontSize:'clamp(14px,1.4vw,17px)', color:'rgba(255,255,255,0.85)', lineHeight:1.65, margin:0 }}>
+                  "How might we create an exhibit that allows visitors to interact with the collected ecological data, the gardens, and with the museum itself?"
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div className="content-pad"><div style={divider} /></div>
+
+          {/* ── DEVELOP ── */}
+          <section id="develop" style={{ paddingBottom:48 }}>
+            <div className="content-pad">
+              <PhaseBadge phase="Develop" />
+
+              {/* Frameworks first — title + text left, IPOP image right */}
+              <div style={{ display:'flex', gap:20, alignItems:'flex-start', marginBottom:32 }}>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <span style={sectionLabel}>Exhibition Research</span>
+                  <h3 style={sectionHeading}>Understanding what good exhibit design looks like</h3>
+                  <p style={{ ...bodyText, marginBottom:16 }}>
+                    Now that we were moving forward with the exhibit concept, we needed to get a handle on what good exhibit design looked like in practice. Two frameworks became lenses we returned to throughout the rest of the project.
+                  </p>
+                  <p style={{ ...bodyText }}>
+                    The <strong style={{ color:'#5A5A65' }}>Smithsonian exhibit development framework</strong> gave us a structure centered on a single big idea, supported by key messages and critical questions the exhibit must answer for visitors. The <strong style={{ color:'#5A5A65' }}>IPOP model</strong>,Ideas, People, Objects, Physical, explains that visitors come to museums with four different orientations, and a well designed exhibit has to work for all four simultaneously.
+                  </p>
+                </div>
+                <div style={{ width:'33%', flexShrink:0 }}>
+                  <img src="../assets/living-record/ipop-model.png" alt="IPOP Model"
+                    style={{ width:'100%', display:'block', borderRadius:4 }} />
+                  <span style={imgCaption}>The IPOP model</span>
+                </div>
+              </div>
+
+              {/* Field trips */}
+              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Field trips</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                Research only gets you so far, we needed to go and see things.
+              </p>
+
+              {/* Outernet */}
+              <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:10 }}>Visit 01 — Outernet London</div>
+              <p style={{ ...bodyText, marginBottom:14 }}>
+                Outernet London is a large scale immersive media installation. Visiting it showed us what an immersive digital environmental could feel like when done well.
+              </p>
+              {/* Outernet grid: video left, two photos right — matching blog-04 layout */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:8 }}>
+                <video src="../assets/living-record/outernet-movie.MOV" muted loop playsInline autoPlay
+                  style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:4, display:'block', minHeight:0 }}
+                  onMouseEnter={e=>e.target.setAttribute('controls','')}
+                  onMouseLeave={e=>e.target.removeAttribute('controls')} />
+                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                  <img src="../assets/living-record/outernet-inspo2.png" alt="Outernet inspiration"
+                    style={{ width:'100%', flex:1, objectFit:'cover', borderRadius:4, display:'block', minHeight:0 }} />
+                  <img src="../assets/living-record/outernet-inspo3.png" alt="Outernet inspiration"
+                    style={{ width:'100%', flex:1, objectFit:'cover', borderRadius:4, display:'block', minHeight:0 }} />
+                </div>
+              </div>
+              <span style={{ ...imgCaption, marginBottom:28 }}>Outernet London — inspiration visit</span>
+
+              {/* NHM */}
+              <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:10 }}>Visit 02 — Natural History Museum</div>
+              <p style={{ ...bodyText, marginBottom:14 }}>
+                A structured observation visit. We catalogd interaction types (touchscreens, animatronics, immersive rooms, physical 3D models, audio recordings), how exhibits managed visitor flow, and demographics, which confirmed our target audience: international families and couples.
+              </p>
+              <div style={{ borderRadius:4, overflow:'hidden', marginBottom:8 }}>
+                <video src="../assets/living-record/nhm-dinosaur.MOV" muted loop playsInline autoPlay
+                  style={{ width:'100%', display:'block', objectFit:'cover', objectPosition:'center 40%', maxHeight:380 }}
+                  onMouseEnter={e=>e.target.setAttribute('controls','')}
+                  onMouseLeave={e=>e.target.removeAttribute('controls')} />
+              </div>
+              <span style={{ ...imgCaption, marginBottom:40 }}>Natural History Museum — observation visit</span>
+
+              {/* Concept */}
+              <span style={sectionLabel}>Concept</span>
+              <h3 style={sectionHeading}>Giving the exhibit a shape and a story</h3>
+
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                Using the brief, our field observation notes, and the Smithsonian framework as a guide, we locked in the type of exhibit, our target audience, our purpose statement, and our main message.
+              </p>
+
+              {/* Smithsonian framework table */}
+              <div style={{ marginBottom:32, borderRadius:6, overflow:'hidden', border:'1px solid rgba(28,28,34,0.08)' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 2fr',
+                  background:'rgba(28,28,34,0.04)', borderBottom:'1px solid rgba(28,28,34,0.08)',
+                  padding:'10px 16px' }}>
+                  <span style={{ ...mono, fontSize:10, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632' }}>Framework</span>
+                  <span style={{ ...mono, fontSize:10, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632' }}>Our Decision</span>
+                </div>
+                {[
+                  { label:'Type of Exhibit',    value:'Permanent and research led' },
+                  { label:'Target Audience',    value:'International visitors' },
+                  { label:'Purpose Statement',  value:'To propose a novel way for visitors to interact with the NHM\'s ecological data' },
+                  { label:'Main Message',       value:'Changes in these gardens are representative of larger changes in the world' },
+                ].map(({ label, value }, i, arr) => (
+                  <div key={label} style={{
+                    display:'grid', gridTemplateColumns:'1fr 2fr',
+                    padding:'14px 16px', alignItems:'baseline',
+                    borderBottom: i < arr.length - 1 ? '1px solid rgba(28,28,34,0.06)' : 'none',
+                  }}>
+                    <span style={{ fontFamily:'Manrope, sans-serif', fontSize:12, fontWeight:400, color:'#7A7A85' }}>{label}</span>
+                    <span style={{ fontFamily:'Manrope, sans-serif', fontSize:13, color:'#1C1C22', lineHeight:1.55 }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sketching blurb */}
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                With the framework set, sketching became the tool that helped me develop specific aspects of the exhibit concept and interaction design. Sketchnotes (annotation + sketch) in particular helped me think through the logic of individual interactions and visitory wayfinding.
+              </p>
+
+              {/* Sketch note — 90% width, expandable */}
+              <div style={{ width:'90%', marginBottom:24, marginLeft:'auto', marginRight:'auto' }}>
+                <ExpandableImg
+                  src="../assets/living-record/sketch-note.png"
+                  alt="Exhibit concept sketchnote"
+                  style={{ width:'100%' }}
+                />
+                <span style={imgCaption}>Exhibit concept sketchnote — click to expand</span>
+              </div>
+
+              {/* Short lead-in to organizing concept */}
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                I also used sketching to develop the organizing concept of the exhibit. A rough sketch surfaced an idea: start at the smallest scale (DNA, microorganisms) and gradually zoom out, room by room, to the garden, to London, to a global picture. This serves our target audience of International visitors aren't necessarily interested in one garden in South Kensington, but would be interested in what that garden says about the planet they live on. It also furthers the NHM museum mission of being an advocate for the planet as whole. 
+              </p>
+
+              {/* Micro to macro callout */}
+              <div style={{ background:'#1C1C22', borderRadius:6, padding:'28px 32px', marginBottom:24 }}>
+                <div style={{ ...mono, fontSize:10, letterSpacing:'0.1em', textTransform:'uppercase', color:'rgba(255,255,255,0.65)', marginBottom:12 }}>The Organizing Concept</div>
+                <p style={{ fontFamily:'Manrope, sans-serif', fontWeight:400, fontSize:'clamp(15px,1.5vw,20px)', color:'rgba(255,255,255,0.9)', lineHeight:1.6, margin:0 }}>
+                  From micro to macro: starting at the DNA level and gradually zooming out, room by room, to reveal a global ecological picture.
+                </p>
+                <p style={{ fontFamily:'Manrope, sans-serif', fontWeight:400, fontSize:13, color:'rgba(255,255,255,0.85)', lineHeight:1.5, margin:'16px 0 0' }}>
+                  The Living Record: a platform for telling data-rich stories.
+                </p>
+              </div>
+
+              {/* Specification */}
+              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Specifying every room</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                To move from concept to specification, the team worked through a sequence of tools: Crazy 8s, storyboards, and a user journey map to understand how all the interactions would connect end-to-end.
+              </p>
+
+              {/* Exhibit flow — no background */}
+              <div style={{ marginBottom:28 }}>
+                <img src="../assets/living-record/exhibit-flow-final.png" alt="Exhibit flow — room by room"
+                  style={{ width:'100%', borderRadius:4, display:'block' }} />
+                <span style={imgCaption}>Exhibit flow — every room defined in sequence</span>
+              </div>
+
+              {/* Garden room */}
+              <h3 style={{ ...sectionHeading, marginBottom:12 }}>The Garden Room</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                For the scope of this project, I focused our design effort on the central garden room were the main interactions would be an immersive, interactive weather control panel, and touch screen kiosks where visitors could explore different garden habitats. 
+              </p>
+
+              <div style={{ marginBottom:8 }}>
+                <img src="../assets/living-record/garden-room-sketch1.png" alt="Garden room sketch"
+                  style={{ width:'100%', display:'block', borderRadius:4 }} />
+                <span style={imgCaption}>Garden room sketch</span>
+              </div>
+            </div>
+          </section>
+
+          <div className="content-pad"><div style={divider} /></div>
+
+          {/* ── FINAL SOLUTION ── */}
+          <section id="final-solution" style={{ paddingBottom:48 }}>
+            <div className="content-pad">
+              <PhaseBadge phase="Deliver" />
+              <span style={sectionLabel}>Solution</span>
+              <h3 style={sectionHeading}>The Living Record</h3>
+              <p style={{ ...bodyText, marginBottom:28 }}>
+                A museum exhibition designed to flow from micro to macro. Visitors move through a sequence of rooms, from the DNA of a single species to the health of the planet. Every data visualization in the exhibit is designed to update as the sensor data updates, fed in real time by the 27 sensor sites across the NHM gardens. The Living Record isn't a snapshot, it's a living platform for data-rich stories about the garden and the world we live in. 
+              </p>
+
+              {/* Exhibit walkthrough: title → still → blurb → video */}
+              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Exhibit Walkthrough</h3>
+              <div style={{ marginBottom:16 }}>
+                <img src="../assets/living-record/exhibit-model-still.png" alt="Exhibit model still"
+                  style={{ width:'100%', borderRadius:4, display:'block' }} />
+                <span style={imgCaption}>Rendered still — 3D exhibit model (Blender, Sydney DeLacey)</span>
+              </div>
+              <p style={{ ...bodyText, marginBottom:16 }}>
+                The full 3D model of the exhibit was built and programmed by Sydney, our UX Engineer and shows the complete micro-to-macro journey from microbe room to garden room to global view.
+              </p>
+              <div style={{ borderRadius:6, overflow:'hidden', marginBottom:8, aspectRatio:'640/360', background:'#1C1C22' }}>
+                <iframe
+                  src="https://player.cloudinary.com/embed/?cloud_name=dx3jvc4xn&public_id=3D-Model-Demo_vvmir6&autoplay=true&muted=true&loop=true"
+                  width="640" height="360"
+                  style={{ height:'100%', width:'100%', border:'none', display:'block' }}
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                  allowFullScreen frameBorder="0"
+                />
+              </div>
+              <span style={{ ...imgCaption, marginBottom:32 }}>The Living Record — full exhibit walkthrough</span>
+
+              {/* Wall visualizations */}
+              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Wall Data Visualizations</h3>
+              <p style={{ ...bodyText, marginBottom:16 }}>
+                A core part of my interaction design work was defining how the sensor data would be visualized in each room, and how visitors would interact with it. Each room's walls were then designed to carry that data visually: the urban heat island effect in the global room, eDNA species prevalence in the micro room, and acoustic waveform of animal sounds in the animal room. I used Adobe Firefly to generate representations of these visualizations for the 3D model.
+              </p>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:8 }}>
+                {[
+                  { src:'../assets/living-record/wall1.png',
+                    title:'Global Level — Urban Heat Island Effect',
+                    desc:'The global level shows macro-scale climate data. Urban heat island visualisation are paired with control panels, allowing visitors to compare different cities around the world. These visualizations would also display the relative amount of greenspace in these cities.' },
+                  { src:'../assets/living-record/wall2.png',
+                    title:'Plant & Animal Level — Acoustic Waveform',
+                    desc:'The second room translates live sound sensor data into a shifting acoustic landscape. Waveform patterns respond continuously to frequency readings from across the garden sites.' },
+                  { src:'../assets/living-record/wall3.png',
+                    title:'Micro Level — eDNA Species Prevalence',
+                    desc:'The entry room displays biodiversity at the molecular level. The visualization maps environmental DNA species detection data collected from soil and water samples across the NHM gardens.' },
+                ].map((item, i, arr) => (
+                  <img key={i} src={item.src} alt={item.title}
+                    className="expandable-img"
+                    onClick={() => window.openGallery(arr, i)}
+                    style={{ width:'100%', borderRadius:4, display:'block', aspectRatio:'1', objectFit:'cover' }} />
+                ))}
+              </div>
+              <span style={{ ...imgCaption, marginBottom:32 }}>Wall data visualizations — Adobe Firefly</span>
+
+              {/* Garden room prototypes — two videos stacked */}
+              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Garden Room Prototypes</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                The garden room interactions were prototyped in Figma. Below are the two main demos: the weather data control panel and the habitat kiosks.
+              </p>
+              <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                <div>
+                  <video src="../assets/living-record/control-panel-prototype.mov" muted loop playsInline autoPlay
+                    style={{ width:'100%', display:'block', borderRadius:4 }}
+                    onMouseEnter={e=>e.target.setAttribute('controls','')}
+                    onMouseLeave={e=>e.target.removeAttribute('controls')} />
+                  <span style={imgCaption}>Weather data control panel prototype</span>
+                </div>
+                <div>
+                  <video src="../assets/living-record/kiosk-prototype.mov" muted loop playsInline autoPlay
+                    style={{ width:'100%', display:'block', borderRadius:4 }}
+                    onMouseEnter={e=>e.target.setAttribute('controls','')}
+                    onMouseLeave={e=>e.target.removeAttribute('controls')} />
+                  <span style={imgCaption}>Habitat kiosk prototype</span>
+                </div>
+              </div>
+
+              {/* NHM presentation */}
+              <h3 style={{ ...sectionHeading, marginTop:40, marginBottom:12 }}>Presented at the Natural History Museum</h3>
+              <p style={{ ...bodyText, marginBottom:16 }}>
+                The final presentation was delivered on-site at the NHM to their research and UX team. We received feedback that they were really impressed by our concept and that our deliverables were of professional quality.
+              </p>
+              <div style={{ marginBottom:8 }}>
+                <img src="../assets/living-record/NHM-presentation.png" alt="Presentation at NHM"
+                  style={{ width:'100%', borderRadius:4, display:'block' }} />
+              </div>
+              <span style={imgCaption}>Final presentation — Natural History Museum</span>
+            </div>
+          </section>
+
+          <div className="content-pad"><div style={divider} /></div>
+
+          {/* ── REFLECTION ── */}
+          <section id="reflection" style={{ paddingBottom:64 }}>
+            <div className="content-pad">
+              <span style={sectionLabel}>Reflection</span>
+              <h3 style={sectionHeading}>What I learned</h3>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                The biggest takeaway from this project is something I'm still thinking about: creativity in design requires structure. The frameworks and tools that we used (the double diamond, the Smithsonian exhibit framework, IPOP model, brainwriting) were the scaffolding that made creativity possible. 
+              </p>
+              <p style={{ ...bodyText, marginBottom:20 }}>
+                Here's a summary of my main takeaways about the design process, skills and tools that I'll carry forward into future projects:
+              </p>
+              
+
+              <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:36 }}>
+                <InsightCard number="01" text="Structure is a creative tool: frameworks don't limit ideas, they make space for them." />
+                <InsightCard number="02" text="Sketching is thinking, not drawing. Externalizing ideas can be messy and that's okay." />
+                <InsightCard number="03" text="Communicating design is as important as doing it. The medium shapes how work is received." />
+              </div>
+
+              {/* Blog link */}
+              <div style={{ background:'#F5F3EE', borderRadius:6, padding:'24px 28px',
+                display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:48 }}>
+                <div>
+                  <div style={{ fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:14, color:'#1C1C22', marginBottom:4 }}>The Living Record — Process Blog</div>
+                  <p style={{ ...bodyText, margin:0 }}>Want to see more? I wrote a blog documenting the entire process.</p>
+                </div>
+                <a href="https://sophiacalfred-uxdesign.github.io/the-living-record/"
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#1C1C22',
+                    borderRadius:5, padding:'10px 18px', textDecoration:'none', flexShrink:0 }}>
+                  <span style={{ ...mono, fontSize:11, fontWeight:500, letterSpacing:'0.08em', textTransform:'uppercase', color:'#FFFBF4' }}>Read the blog ↗</span>
+                </a>
+              </div>
+
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+                <a href="../index.html" style={{ display:'inline-flex', alignItems:'center', gap:8,
+                  fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:14,
+                  color:'#1C1C22', textDecoration:'none', borderBottom:'1px solid #1C1C22', paddingBottom:2 }}>← Back to all work</a>
+                <a href="garden-tours.html" style={{ display:'inline-flex', alignItems:'center', gap:8,
+                  fontFamily:'Manrope, sans-serif', fontWeight:500, fontSize:14,
+                  color:'#1C1C22', textDecoration:'none', borderBottom:'1px solid #1C1C22', paddingBottom:2 }}>Next: Garden Tours →</a>
+              </div>
+            </div>
+          </section>
+
+        </main>
+      </div>
+      <EWFooter />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<LivingRecordPage />);
+</script>
+
+<script>
+  // Image overlay logic (outside React) — supports single images and galleries
+  const overlay    = document.getElementById('img-overlay');
+  const overlayImg = document.getElementById('img-overlay-img');
+  const closeBtn   = document.getElementById('img-overlay-close');
+  const prevBtn    = document.getElementById('img-overlay-prev');
+  const nextBtn    = document.getElementById('img-overlay-next');
+  const captionEl  = document.getElementById('img-overlay-caption');
+
+  let scale = 1, panX = 0, panY = 0, isDragging = false, startX = 0, startY = 0;
+  let galleryImages = [], galleryIndex = 0;
+
+  function applyTransform() {
+    overlayImg.style.transform = `scale(${scale}) translate(${panX/scale}px,${panY/scale}px)`;
+  }
+
+  function showGalleryImage() {
+    const item = galleryImages[galleryIndex];
+    overlayImg.src = item.src || item;
+    scale = 1; panX = 0; panY = 0; applyTransform();
+    if (captionEl) {
+      captionEl.innerHTML = item.title
+        ? `<strong style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.8);margin-bottom:7px">${item.title}</strong>${item.desc || ''}`
+        : '';
+    }
+    if (prevBtn) prevBtn.classList.toggle('hidden', galleryImages.length <= 1);
+    if (nextBtn) nextBtn.classList.toggle('hidden', galleryImages.length <= 1);
+  }
+
+  window.openGallery = function(images, index) {
+    galleryImages = images;
+    galleryIndex  = index;
+    showGalleryImage();
+    overlay.classList.add('active');
+  };
+
+  function closeOverlay() { overlay.classList.remove('active'); }
+  closeBtn.addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+
+  prevBtn.addEventListener('click', () => {
+    galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+    showGalleryImage();
+  });
+  nextBtn.addEventListener('click', () => {
+    galleryIndex = (galleryIndex + 1) % galleryImages.length;
+    showGalleryImage();
+  });
+
+  overlayImg.addEventListener('wheel', e => {
+    e.preventDefault();
+    scale = Math.min(Math.max(0.5, scale + (e.deltaY > 0 ? -0.12 : 0.12)), 6);
+    applyTransform();
+  }, { passive: false });
+  overlayImg.addEventListener('mousedown', e => {
+    isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY;
+    overlayImg.style.cursor = 'grabbing'; e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    panX = e.clientX - startX; panY = e.clientY - startY; applyTransform();
+  });
+  document.addEventListener('mouseup', () => { isDragging = false; overlayImg.style.cursor = 'grab'; });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeOverlay();
+    if (!overlay.classList.contains('active') || galleryImages.length <= 1) return;
+    if (e.key === 'ArrowLeft')  { galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length; showGalleryImage(); }
+    if (e.key === 'ArrowRight') { galleryIndex = (galleryIndex + 1) % galleryImages.length; showGalleryImage(); }
+  });
+</script>
+</body>
+</html>

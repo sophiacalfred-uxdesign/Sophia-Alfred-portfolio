@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Read(//usr/bin/**)",
+      "mcp__figma__generate_figma_design",
+      "Bash(open \"http://localhost:3456/#figmacapture=d77ee5f3-bb6e-4359-a8f8-cbf1c6d401b2&figmaendpoint=https%3A%2F%2Fmcp.figma.com%2Fmcp%2Fcapture%2Fd77ee5f3-bb6e-4359-a8f8-cbf1c6d401b2%2Fsubmit&figmadelay=1000\")",
+      "Bash(open \"http://localhost:3456/index.html#figmacapture=d77ee5f3-bb6e-4359-a8f8-cbf1c6d401b2&figmaendpoint=https%3A%2F%2Fmcp.figma.com%2Fmcp%2Fcapture%2Fd77ee5f3-bb6e-4359-a8f8-cbf1c6d401b2%2Fsubmit&figmadelay=2000\")",
+      "Bash(open \"http://localhost:3456/index.html#figmacapture=22091272-9ff9-4096-b287-4b854ddf5e86&figmaendpoint=https%3A%2F%2Fmcp.figma.com%2Fmcp%2Fcapture%2F22091272-9ff9-4096-b287-4b854ddf5e86%2Fsubmit&figmadelay=2000\")",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_metadata",
+      "Bash(open \"http://localhost:3457/acoustic-sign.html#figmacapture=239a06b6-49cf-4c63-af7e-074ae4e55b9f&figmaendpoint=https%3A%2F%2Fmcp.figma.com%2Fmcp%2Fcapture%2F239a06b6-49cf-4c63-af7e-074ae4e55b9f%2Fsubmit&figmadelay=1000\")",
+      "Bash(open \"http://localhost:3457/cta-sign.html#figmacapture=92e8db64-64d0-4e98-a814-cc94219515b6&figmaendpoint=https%3A%2F%2Fmcp.figma.com%2Fmcp%2Fcapture%2F92e8db64-64d0-4e98-a814-cc94219515b6%2Fsubmit&figmadelay=1500\")",
+      "mcp__figma__use_figma",
+      "mcp__figma__get_screenshot",
+      "mcp__d462f92d-4642-4a50-a953-dfd4b9c83b84__use_figma",
+      "Read(//usr/local/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//Users/sophiaalfred/.nvm/versions/**)",
+      "Bash(ls /usr/bin/python*)",
+      "Bash(ls /opt/homebrew/bin/python*)",
+      "Bash(echo $ANTHROPIC_API_KEY)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Read(//Users/sophiaalfred/**)",
+      "Bash(unzip -o \"Portfolio 2026-handoff.zip\" -d portfolio_extracted)"
+    ]
+  }
+}
