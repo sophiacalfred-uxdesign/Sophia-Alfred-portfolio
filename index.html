@@ -84,7 +84,7 @@ function EWFooter() {
         <div style={{ display: 'flex', gap: 48 }}>
           {[
             { heading: 'say hi', links: [
-              { label: 'LinkedIn', href: 'https://linkedin.com/in/sophiaalfred' },
+              { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sophia-alfred-sca07/' },
               { label: 'Email',    href: 'mailto:sophiacalfred@gmail.com' },
               { label: 'Resume',   href: 'assets/sophia-resume.pdf', external: true },
             ]},
@@ -128,7 +128,7 @@ function EWFooter() {
 }
 
 /* ── ProjectCard ── */
-function ProjectCard({ title, meta, description, image, video, bgColor, href, children, stretchMedia, cursorLabel, videoHeight }) {
+function ProjectCard({ title, meta, description, image, video, bgColor, href, children, stretchMedia, cursorLabel, cursorBg, videoHeight }) {
   const [hovered, setHovered] = React.useState(false);
   const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
 
@@ -150,7 +150,7 @@ function ProjectCard({ title, meta, description, image, video, bgColor, href, ch
           position: 'fixed',
           left: mousePos.x + 14,
           top: mousePos.y - 10,
-          background: '#016FEB',
+          background: cursorBg || '#016FEB',
           color: '#F4EFE4',
           fontFamily: 'Manrope, sans-serif',
           fontWeight: 500,
@@ -240,9 +240,9 @@ function HeroSection() {
 const PROJECTS_LEFT = [
   {
     id: 'cloudflare',
-    title: 'Cloudflare Data Visualization Platforms',
+    title: 'Cloudflare Product Design Internship',
     meta: 'Cloudflare Internship · Summer 2026',
-    description: "Currently working as a Product Design intern at Cloudflare. Case study coming soon!",
+    description: "IncomingProduct Design intern at Cloudflare. Case study coming later this summer!",
     video: 'assets/cloudflare-cover1.mov',
     bgColor: '#016FEB',
     cursorLabel: 'IN PROGRESS!',
@@ -266,7 +266,8 @@ const PROJECTS_LEFT = [
     description: 'An AI note taking and memory keeping application.',
     image: 'assets/memento-cover.png',
     bgColor: '#D4CDFF',
-    href: 'case-studies/memento.html',
+    cursorLabel: 'CASE STUDY UNDER CONSTRUCTION!',
+    cursorBg: '#ED5632',
   },
 ];
 
@@ -287,7 +288,8 @@ const PROJECTS_RIGHT = [
     description: 'A yoga knowledge hub for poses, sequences, and teaching.',
     image: 'assets/yogapedia-cover.png',
     bgColor: '#F2E08A',
-    href: 'case-studies/yogapedia.html',
+    cursorLabel: 'CASE STUDY UNDER CONSTRUCTION!',
+    cursorBg: '#ED5632',
   },
   {
     id: 'design-system',
@@ -296,7 +298,8 @@ const PROJECTS_RIGHT = [
     description: 'AI powered Design System Generator that creates a functional design foundation from text prompts.',
     video: 'assets/design-system-cover.mp4',
     bgColor: '#1C1C22',
-    href: 'case-studies/design-system.html',
+    cursorLabel: 'CASE STUDY UNDER CONSTRUCTION!',
+    cursorBg: '#ED5632',
   },
 ];
 
