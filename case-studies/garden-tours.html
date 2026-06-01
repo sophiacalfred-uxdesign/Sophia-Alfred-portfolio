@@ -137,7 +137,6 @@ function EWFooter() {
             { heading: 'work', links: [
               { label: 'The Living Record', href: 'living-record.html' },
               { label: 'Garden Tours',      href: 'garden-tours.html' },
-              { label: 'Yogapedia',         href: 'yogapedia.html' },
               { label: 'My Art Gallery',    href: '../about.html#gallery' },
             ]},
           ].map(col =>
@@ -167,8 +166,11 @@ function EWFooter() {
       </div>
       <div style={{
         padding: '0 36px 24px', fontFamily: 'Manrope, sans-serif',
-        fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.02em',
-      }}>© 2026 Sophia Alfred</div>
+        letterSpacing: '0.02em',
+      }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>Portfolio created with Claude Code :)</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>© 2026 Sophia Alfred</div>
+      </div>
     </footer>
   );
 }

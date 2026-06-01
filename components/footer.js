@@ -13,8 +13,16 @@ function EWFooter({ basePath = '' }) {
         flexWrap: 'wrap',
         gap: 24
       }}>
-        <img src={basePath + 'assets/sophia-logo-white.png'} alt="sophia alfred"
-          style={{ height: 32, display: 'block', opacity: 0.9 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <img src={basePath + 'assets/sophia-logo-white.png'} alt="sophia alfred"
+            style={{ height: 32, display: 'block', opacity: 0.9 }} />
+          <div style={{
+            fontFamily: 'Manrope, sans-serif',
+            fontSize: 11,
+            color: 'rgba(255,255,255,0.3)',
+            letterSpacing: '0.02em',
+          }}>Portfolio created with Claude Code :)</div>
+        </div>
 
         <div style={{ display: 'flex', gap: 48 }}>
           {[

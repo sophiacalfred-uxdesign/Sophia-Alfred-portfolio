@@ -91,7 +91,6 @@ function EWFooter() {
             { heading: 'work', links: [
               { label: 'The Living Record', href: 'case-studies/living-record.html' },
               { label: 'Garden Tours',      href: 'case-studies/garden-tours.html' },
-              { label: 'Yogapedia',         href: 'case-studies/yogapedia.html' },
               { label: 'My Art Gallery', href: 'about.html#gallery' },
             ]},
           ].map(col =>
@@ -121,8 +120,11 @@ function EWFooter() {
       </div>
       <div style={{
         padding: '0 36px 24px', fontFamily: 'Manrope, sans-serif',
-        fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.02em',
-      }}>© 2026 Sophia Alfred</div>
+        letterSpacing: '0.02em',
+      }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>Portfolio created with Claude Code :)</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>© 2026 Sophia Alfred</div>
+      </div>
     </footer>
   );
 }
@@ -242,7 +244,7 @@ const PROJECTS_LEFT = [
     id: 'cloudflare',
     title: 'Cloudflare Product Design Internship',
     meta: 'Cloudflare Internship · Summer 2026',
-    description: "IncomingProduct Design intern at Cloudflare. Case study coming later this summer!",
+    description: "Incoming Product Design intern at Cloudflare, summer 2026.",
     video: 'assets/cloudflare-cover1.mov',
     bgColor: '#016FEB',
     cursorLabel: 'IN PROGRESS!',
@@ -276,7 +278,7 @@ const PROJECTS_RIGHT = [
     id: 'living-record',
     title: 'The Living Record: Museum Exhibit',
     meta: 'London Natural History Museum · Client Project · Spring 2026 · Case Study',
-    description: 'Exhibition design for the Urban Nature Project.',
+    description: 'Exhibition design for the Urban Nature Project at the London Natural History Museum.',
     video: 'assets/living-record-cover.mov',
     bgColor: '#C8D9A0',
     href: 'case-studies/living-record.html',
