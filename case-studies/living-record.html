@@ -332,11 +332,8 @@ function LivingRecordPage() {
 
       {/* COVER */}
       <div style={{ width:'100%', aspectRatio:'16/7', background:'#C8D9A0', position:'relative', overflow:'hidden' }}>
-        <iframe
-          src="https://player.cloudinary.com/embed/?cloud_name=dx3jvc4xn&public_id=living-record-cover-full-original_tmq6zh&autoplay=true&muted=true&loop=true&controls=false"
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          allowFullScreen frameBorder="0"
-          style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%, -50%) scale(1.5)', width:'177.78vh', minWidth:'100%', height:'56.25vw', minHeight:'100%', border:'none' }} />
+        <video src="../assets/living-record-cover-full.mov" autoPlay muted loop playsInline
+          style={{ width:'100%', height:'100%', objectFit:'cover', position:'absolute', inset:0 }} />
         <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.45)' }} />
         <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
           justifyContent:'center', alignItems:'center', padding:'clamp(24px,4vw,60px)', textAlign:'center' }}>
