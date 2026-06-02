@@ -169,7 +169,7 @@ function ProjectCard({ title, meta, description, image, video, bgColor, href, ch
         width: '100%',
         borderRadius: 2, overflow: 'hidden',
         background: bgColor || '#F0EEEA',
-        transform: hovered ? 'scale(1.005)' : 'scale(1)',
+        transform: hovered ? 'scale(1.01)' : 'scale(1)',
         transition: 'transform 0.3s ease',
       }}>
         {video && <video src={video} autoPlay muted loop playsInline
@@ -279,7 +279,7 @@ const PROJECTS_RIGHT = [
     title: 'The Living Record: Museum Exhibit',
     meta: 'London Natural History Museum · Client Project · Spring 2026 · Case Study',
     description: 'Exhibition design for the Urban Nature Project at the London Natural History Museum.',
-    video: 'assets/living-record-cover.mov',
+    video: 'assets/living-record-cover.mp4',
     bgColor: '#C8D9A0',
     href: 'case-studies/living-record.html',
   },
