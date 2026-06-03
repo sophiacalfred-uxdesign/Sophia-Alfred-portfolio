@@ -533,15 +533,21 @@ function LivingRecordPage() {
               </p>
               {/* Outernet grid: video left, two photos right — matching blog-04 layout */}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:8 }}>
-                <video src="../assets/living-record/outernet-movie.mp4" muted loop playsInline autoPlay
-                  style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:4, display:'block', minHeight:0 }}
-                  onMouseEnter={e=>e.target.setAttribute('controls','')}
-                  onMouseLeave={e=>e.target.removeAttribute('controls')} />
-                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                  <img src="../assets/living-record/outernet-inspo2.png" alt="Outernet inspiration"
-                    style={{ width:'100%', flex:1, objectFit:'cover', borderRadius:4, display:'block', minHeight:0 }} />
-                  <img src="../assets/living-record/outernet-inspo3.png" alt="Outernet inspiration"
-                    style={{ width:'100%', flex:1, objectFit:'cover', borderRadius:4, display:'block', minHeight:0 }} />
+                <div style={{ height:440, borderRadius:4, overflow:'hidden' }}>
+                  <video src="../assets/living-record/outernet-movie.mp4" muted loop playsInline autoPlay
+                    style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+                    onMouseEnter={e=>e.target.setAttribute('controls','')}
+                    onMouseLeave={e=>e.target.removeAttribute('controls')} />
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:8, height:440 }}>
+                  <div style={{ flex:1, borderRadius:4, overflow:'hidden' }}>
+                    <img src="../assets/living-record/outernet-inspo2.png" alt="Outernet inspiration"
+                      style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                  </div>
+                  <div style={{ flex:1, borderRadius:4, overflow:'hidden' }}>
+                    <img src="../assets/living-record/outernet-inspo3.png" alt="Outernet inspiration"
+                      style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                  </div>
                 </div>
               </div>
               <span style={{ ...imgCaption, marginBottom:28 }}>Outernet London — inspiration visit</span>
