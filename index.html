@@ -91,7 +91,8 @@ function EWFooter() {
             { heading: 'work', links: [
               { label: 'The Living Record', href: 'case-studies/living-record.html' },
               { label: 'Garden Tours',      href: 'case-studies/garden-tours.html' },
-              { label: 'My Art Gallery', href: 'about.html#gallery' },
+              { label: 'Yogapedia',         href: 'case-studies/yogapedia.html' },
+              { label: 'My Art Gallery',    href: 'about.html#gallery' },
             ]},
           ].map(col =>
             <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -290,8 +291,7 @@ const PROJECTS_RIGHT = [
     description: 'A yoga knowledge hub for poses, sequences, and teaching.',
     image: 'assets/yogapedia-cover.png',
     bgColor: '#F2E08A',
-    cursorLabel: 'CASE STUDY UNDER CONSTRUCTION!',
-    cursorBg: '#ED5632',
+    href: 'case-studies/yogapedia.html',
   },
   {
     id: 'design-system',
