@@ -22,7 +22,15 @@
       "Bash(echo $ANTHROPIC_API_KEY)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
       "Read(//Users/sophiaalfred/**)",
-      "Bash(unzip -o \"Portfolio 2026-handoff.zip\" -d portfolio_extracted)"
+      "Bash(unzip -o \"Portfolio 2026-handoff.zip\" -d portfolio_extracted)",
+      "mcp__Figma__get_screenshot",
+      "Bash(curl -s -o /tmp/audience.png \"https://www.figma.com/api/mcp/asset/c4ceb1eb-373b-4c26-915f-99203f3231ff\")",
+      "Read(//tmp/**)",
+      "Bash(sips -g pixelWidth -g pixelHeight audience.png)",
+      "Bash(pip3 install *)",
+      "Bash(python3 -c ' *)",
+      "Bash(grep -E '^\\\\s{0,2}<\\(frame|group|section\\)')",
+      "Bash(curl -s -o /tmp/full.png \"https://www.figma.com/api/mcp/asset/a8898c61-2a3f-481f-804e-d6d6bf4c0ff8\")"
     ]
   }
 }
