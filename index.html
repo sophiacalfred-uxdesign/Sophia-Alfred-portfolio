@@ -21,7 +21,7 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #FFFBF4; }
     ::-webkit-scrollbar-thumb { background: #A8A8B3; border-radius: 3px; }
-    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
     @media (max-width: 768px) { .project-grid { grid-template-columns: 1fr; } }
   </style>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
@@ -146,7 +146,7 @@ function ProjectCard({ title, meta, description, image, video, bgColor, href, ch
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onMouseMove={cursorLabel ? handleMouseMove : undefined}
-      style={{ display: 'flex', flexDirection: 'column', gap: 6, cursor: cursorLabel ? 'none' : (href ? 'pointer' : 'default'), position: 'relative' }}>
+      style={{ display: 'flex', flexDirection: 'column', gap: 16, cursor: cursorLabel ? 'none' : (href ? 'pointer' : 'default'), position: 'relative' }}>
 
       {/* Custom cursor label */}
       {cursorLabel && hovered && (
@@ -167,32 +167,47 @@ function ProjectCard({ title, meta, description, image, video, bgColor, href, ch
           whiteSpace: 'nowrap',
         }}>{cursorLabel}</div>
       )}
+      {/* Thumbnail with hover overlay */}
       <div style={{
         width: '100%',
-        borderRadius: 2, overflow: 'hidden',
+        borderRadius: 20, overflow: 'hidden',
         background: bgColor || '#F0EEEA',
         transform: hovered ? 'scale(1.01)' : 'scale(1)',
         transition: 'transform 0.3s ease',
+        position: 'relative',
       }}>
         {video && <video src={video} autoPlay muted loop playsInline
           style={{ width: '100%', height: videoHeight ? videoHeight : 'auto', objectFit: videoHeight ? 'cover' : 'unset', display: 'block' }} />}
         {image && !video && <img src={image} alt={title}
           style={{ width: '100%', height: 'auto', display: 'block' }} />}
         {children}
+        {/* Gradient overlay + meta on hover */}
+        {meta && <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%)',
+          padding: '32px 16px 16px',
+          opacity: hovered ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 12,
+            lineHeight: '18px', letterSpacing: '0.01em', color: '#FFFFFF',
+          }}>{meta}</div>
+        </div>}
       </div>
-      {meta && <div style={{
-        fontFamily: 'Manrope, sans-serif', fontWeight: 300, fontSize: 12,
-        lineHeight: '18px', letterSpacing: '0.01em', color: '#7A7A85',
-      }}>{meta}</div>}
-      <div style={{
-        fontFamily: "'Self Modern', serif", fontWeight: 300,
-        fontSize: 20, lineHeight: '22px', letterSpacing: '0.01em',
-        color: hovered ? '#A8A8B3' : '#5A5A65', transition: 'color 0.2s',
-      }}>{title}</div>
-      {description && <div style={{
-        fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 14,
-        lineHeight: '17px', letterSpacing: '0.01em', color: '#7A7A85',
-      }}>{description}</div>}
+      {/* Title + description group */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{
+          fontFamily: "'Self Modern', serif", fontWeight: 300,
+          fontSize: 20, lineHeight: '22px', letterSpacing: '0.01em',
+          color: hovered ? '#A8A8B3' : '#5A5A65', transition: 'color 0.2s',
+        }}>{title}</div>
+        {description && <div style={{
+          fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 14,
+          lineHeight: '17px', letterSpacing: '0.01em', color: '#7A7A85',
+        }}>{description}</div>}
+      </div>
     </div>
   );
 }
@@ -213,7 +228,7 @@ function HeroSection() {
 
   return (
     <div style={{
-      width: '100%', height: 'calc(100vh - 56px)', background: '#FFFBF4',
+      width: '100%', height: 503, background: '#FFFBF4',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', padding: '0 36px', textAlign: 'center',
     }}>
@@ -235,7 +250,7 @@ function HeroSection() {
         fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 16,
         lineHeight: '24px', letterSpacing: '0.01em', color: '#7A7A85',
         marginTop: 28, maxWidth: 520,
-      }}>Product Design Intern @Cloudflare</p>
+      }}>Product Design @Cloudflare</p>
     </div>
   );
 }
@@ -245,8 +260,8 @@ const PROJECTS_LEFT = [
   {
     id: 'cloudflare',
     title: 'Cloudflare Product Design Internship',
-    meta: 'Cloudflare Internship · Summer 2026',
-    description: "Incoming Product Design intern at Cloudflare, summer 2026.",
+    meta: 'Cloudflare · June - Dec 2026',
+    description: "Redesigning Cloudflare Radar, our data observation platform",
     video: 'assets/cloudflare-cover1.mp4',
     bgColor: '#016FEB',
     cursorLabel: 'IN PROGRESS!',
@@ -315,10 +330,10 @@ function App() {
         <HeroSection />
         <div id="case-studies" style={{ padding: '0 36px 80px', maxWidth: 1700, margin: '0 auto' }}>
           <div className="project-grid">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
               {PROJECTS_LEFT.map(p => <ProjectCard key={p.id} {...p} />)}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
               {PROJECTS_RIGHT.map(p => <ProjectCard key={p.id} {...p} />)}
             </div>
           </div>
