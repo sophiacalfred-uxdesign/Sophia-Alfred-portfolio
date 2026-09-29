@@ -617,7 +617,7 @@ const PROBLEMS = [
   },
 ];
 
-function ProblemSection() {
+function ProblemSection({ hideHeading, hideDesc }) {
   const [active, setActive] = React.useState(0);
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -630,8 +630,8 @@ function ProblemSection() {
 
   return (
     <div>
-      <div style={sectionLabel}>The Problem</div>
-      <h2 style={sectionHeading}>The existing homepage was too complex.</h2>
+      {!hideHeading && <div style={sectionLabel}>The Problem</div>}
+      {!hideHeading && <h2 style={sectionHeading}>The existing homepage was too complex.</h2>}
 
       <div className="problem-image-wrap" onClick={() => setModalOpen(true)} style={{ cursor: 'zoom-in' }}>
         <img src="../assets/cloudflare/oldRadar.png" alt="Old Cloudflare Radar landing page" />
@@ -675,7 +675,7 @@ function ProblemSection() {
             <div className="problem-number">{i + 1}</div>
             <div>
               <div className="problem-card-title">{p.title}</div>
-              <div className="problem-card-desc">{p.desc}</div>
+              {!hideDesc && <div className="problem-card-desc">{p.desc}</div>}
             </div>
           </div>
         ))}
@@ -721,7 +721,7 @@ function ProblemSection() {
                   <div className="problem-number">{i + 1}</div>
                   <div>
                     <div className="problem-card-title">{p.title}</div>
-                    <div className="problem-card-desc">{p.desc}</div>
+                    {!hideDesc && <div className="problem-card-desc">{p.desc}</div>}
                   </div>
                 </div>
               ))}
@@ -923,6 +923,7 @@ function MapStepper() {
 
   return (
     <div>
+      <div className="problem-hint" style={{ textAlign: 'left', marginBottom: 8 }}>HOVER OVER TIMELINE TO SEE ITERATIONS</div>
       {stepperBar(false)}
 
       <div className="problem-image-wrap" onClick={() => setModalOpen(true)} style={{ cursor: 'zoom-in', borderRadius: 12 }}>
@@ -1107,7 +1108,142 @@ function BeforeAfterToggle() {
   );
 }
 
+function ViewToggle({ view, setView }) {
+  const OPTIONS = [
+    ['tldr', 'TL;DR'],
+    ['full', 'Full Case Study'],
+  ];
+  return (
+    <div style={{ display: 'inline-flex', border: '1px solid rgba(28,28,34,0.15)', borderRadius: 6 }}>
+      {OPTIONS.map(([id, label]) => (
+        <button key={id}
+          onClick={() => setView(id)}
+          style={{
+            padding: '8px 16px', cursor: 'pointer',
+            border: '2px solid',
+            borderColor: view === id ? '#fff' : 'transparent',
+            borderRadius: 5,
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            background: view === id ? '#1C1C22' : 'transparent',
+            color: view === id ? '#fff' : '#6E6E78',
+            transition: 'background 0.15s ease, color 0.15s ease, border-color 0.15s ease',
+            backgroundClip: 'padding-box',
+          }}
+          onMouseEnter={e => { if (view !== id) e.currentTarget.style.background = '#F4F4F6'; }}
+          onMouseLeave={e => { if (view !== id) e.currentTarget.style.background = 'transparent'; }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* TL;DR: section label + heading (heading at body size) + the section's visual/interactive */
+const TLDR_SECTIONS = [
+  {
+    label: 'Background',
+    heading: 'Redesigning Radar for the non-technical audiences, without sacrificing the depth.',
+    body: 'Cloudflare Radar is a free, public platform that surfaces real-time data on Internet traffic, security threats, and outages worldwide.',
+    wide: false,
+    visual: (
+      <img src="../assets/cloudflare/radar-mockup1.png" alt="New Cloudflare Radar" style={{
+        width: '100%', borderRadius: 12, display: 'block',
+        border: '1px solid rgba(28,28,34,0.08)',
+      }} />
+    ),
+  },
+  {
+    label: 'The Problem',
+    heading: 'The existing homepage was too complex.',
+    wide: false,
+    visual: <ProblemSection hideHeading hideDesc />,
+  },
+  {
+    label: 'The Process',
+    heading: 'Defining a Radar\u2019s design language.',
+    body: 'I developed a strategy to blend design aspects of all three of Cloudflare\u2019s design languages in order to make Radar approachable like our marketing pages, structured and navigable like content, and maintainable by migrating to Cloudflare\u2019s design system.',
+    wide: false,
+    visual: <VennDiagram />,
+  },
+  {
+    label: '',
+    heading: 'Balancing data richness and approachability.',
+    wide: false,
+    visual: <MapStepper />,
+  },
+  {
+    label: '',
+    heading: 'Restructuring information architecture for broader audiences.',
+    body: 'I created an app for user testing in order to develop a better, user-informed content architecture.',
+    wide: false,
+    visual: (
+      <video
+        src="../assets/cloudflare/card-sort.mov"
+        autoPlay muted loop playsInline
+        style={{
+          width: '100%', aspectRatio: '16/9', objectFit: 'cover',
+          borderRadius: 12, display: 'block', background: '#F4F4F6',
+        }}
+      />
+    ),
+  },
+  {
+    label: 'The Solution',
+    heading: 'A new landing page with a clear reading order.',
+    wide: true,
+    visual: <HierarchyDemo />,
+  },
+  {
+    label: 'The Solution',
+    heading: 'Comparing the old and new experience.',
+    wide: true,
+    visual: <BeforeAfterToggle />,
+  },
+  {
+    label: 'Data set pages',
+    heading: 'Extending the design language across every data view.',
+    wide: false,
+    visual: (
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        {['TRAFFIC PAGE', 'ADOPTION PAGE', 'SECURITY PAGE', 'OUTAGES PAGE'].map(label => (
+          <div key={label} style={{
+            aspectRatio: '4/3', background: '#F4F4F6',
+            border: '1.5px dashed #D0D0D8', borderRadius: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span style={{ ...mono, fontSize: 10, color: '#A8A8B3', letterSpacing: '0.06em' }}>{label}</span>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+];
+
+function TldrView() {
+  return (
+    <div style={{ paddingBottom: 80 }}>
+      {TLDR_SECTIONS.map((s, i) => (
+        <div key={i} style={{ marginBottom: 56 }}>
+          <div className="content-pad" style={{ marginBottom: 20 }}>
+            {s.label && <div style={sectionLabel}>{s.label}</div>}
+            <p style={{ ...bodyText, color: '#1C1C22', fontWeight: 500, margin: 0 }}>{s.heading}</p>
+            {s.body && <p style={{ ...bodyText, marginTop: 12, marginBottom: 0 }}>{s.body}</p>}
+            {s.hint && <div className="problem-hint" style={{ textAlign: 'left', marginTop: 8 }}>{s.hint}</div>}
+          </div>
+          <div className={s.wide ? 'content-wide' : 'content-pad'}>
+            {s.visual}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function CloudflarePage() {
+  const [view, setView] = React.useState('tldr');
   return (
     <HeroGridWrapper hidden>
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'transparent' }}>
@@ -1149,7 +1285,7 @@ function CloudflarePage() {
               </div>
 
               <p style={{ ...bodyText, marginBottom: 16 }}>
-                Redesigned Cloudflare Radar to make real-time Internet traffic and outage data accessible to a broader audience. I redesigned the data visualization approach for the landing page, improved the information architecture, and updated the design language across the platform.
+                Redesigned Cloudflare Radar to make real-time Internet traffic and outage data accessible to a broader audience. To do this, I developed the data visualization approach for the landing page, improved the information architecture, and updated the design language across the platform.
               </p>
 
               <div className="cta-links">
@@ -1227,7 +1363,14 @@ function CloudflarePage() {
         <SideNav />
 
         <main style={{ flex: 1, minWidth: 0 }}>
-          <section id="overview" style={{ paddingTop: 48, paddingBottom: 24 }}>
+          <div className="content-pad" style={{ paddingTop: 32, paddingBottom: 40 }}>
+            <ViewToggle view={view} setView={setView} />
+          </div>
+
+          {view === 'tldr' && <TldrView />}
+
+          {view === 'full' && <React.Fragment>
+          <section id="overview" style={{ paddingTop: 0, paddingBottom: 24 }}>
             <div className="content-pad">
               <div style={sectionLabel}>Background</div>
               <h2 style={sectionHeading}>Redesigning Radar for the non-technical audiences, without sacrificing the depth.</h2>
@@ -1303,18 +1446,18 @@ function CloudflarePage() {
 
             {/* Navigation Redesign */}
             <div className="content-pad">
-              <div style={sectionLabel}>Navigation redesign</div>
               <h2 style={sectionHeading}>Restructuring information architecture for broader audiences.</h2>
               <p style={{ ...bodyText, marginBottom: 16 }}>
                 The original navigation was organized around technical categories familiar to network operators. We restructured it to guide users through the content by topic and relevance, making it intuitive for newcomers while still efficient for experts.
               </p>
-              <div style={{
-                width: '100%', aspectRatio: '16/9',
-                background: '#F4F4F6', border: '1.5px dashed #D0D0D8',
-                borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ ...mono, fontSize: 10, color: '#A8A8B3', letterSpacing: '0.06em' }}>NAVIGATION REDESIGN</span>
-              </div>
+              <video
+                src="../assets/cloudflare/card-sort.mov"
+                autoPlay muted loop playsInline
+                style={{
+                  width: '100%', aspectRatio: '16/9', objectFit: 'cover',
+                  borderRadius: 12, display: 'block', background: '#F4F4F6',
+                }}
+              />
             </div>
           </section>
 
@@ -1359,6 +1502,7 @@ function CloudflarePage() {
               </div>
             </div>
           </section>
+          </React.Fragment>}
         </main>
       </div>
 
