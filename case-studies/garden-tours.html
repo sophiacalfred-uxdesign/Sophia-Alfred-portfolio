@@ -6,19 +6,40 @@
   <title>Garden Tours — Sophia Alfred</title>
   <link rel="icon" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     @font-face {
       font-family: 'Self Modern';
       src: url('../assets/fonts/Self_Modern_Regular.ttf') format('truetype');
       font-weight: 400; font-style: normal; font-display: swap;
     }
+    @font-face { font-family: 'Switzer'; src: url('../assets/fonts/switzer/Switzer-Light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Switzer'; src: url('../assets/fonts/switzer/Switzer-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Switzer'; src: url('../assets/fonts/switzer/Switzer-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Switzer'; src: url('../assets/fonts/switzer/Switzer-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { background: #FFFBF4; color: #1C1C22; -webkit-font-smoothing: antialiased; }
+    body { background: #FCFDFE; color: #1C1C22; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(4,110,235,0.04); color: #046EEB; }
+    ::-moz-selection { background: rgba(4,110,235,0.04); color: #046EEB; }
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #FFFBF4; }
+    ::-webkit-scrollbar-track { background: #FCFDFE; }
     ::-webkit-scrollbar-thumb { background: #A8A8B3; border-radius: 3px; }
+    @keyframes toastPop {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.85) translateY(4px); }
+      15%  { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+      75%  { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) scale(0.95) translateY(-2px); }
+    }
+    .copied-toast {
+      position: absolute; top: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%);
+      background: #1C1C22; color: #fff;
+      font-family: 'Switzer', sans-serif; font-size: 12px; font-weight: 500;
+      padding: 4px 12px; border-radius: 6px; white-space: nowrap;
+      pointer-events: none;
+      animation: toastPop 1.5s ease forwards;
+    }
 
     /* Side nav */
     .sidenav {
@@ -26,7 +47,7 @@
       width: 199px; min-width: 199px;
       height: calc(100vh - 56px);
       padding: 18px;
-      background: #FFFBF4;
+      background: #FCFDFE;
       border-right: 1px solid rgba(0,0,0,0.06);
       display: flex; flex-direction: column;
       justify-content: space-between;
@@ -70,8 +91,9 @@
 <div id="root"></div>
 <script type="text/babel">
 
-function EWNav({ activePage = 'work' }) {
+function EWNav({ activePage }) {
   const [scrolled, setScrolled] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -80,10 +102,16 @@ function EWNav({ activePage = 'work' }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const handleCopyEmail = () => {
+    try { navigator.clipboard.writeText('sophiacalfred@gmail.com'); } catch {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   return (
     <nav style={{
       width: '100%', height: 56,
-      background: scrolled ? 'rgba(255,251,244,0.92)' : 'rgba(255,251,244,0.1)',
+      background: scrolled ? 'rgba(252,253,254,0.92)' : 'rgba(252,253,254,0.1)',
       backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
       borderBottom: '1px solid rgba(28,28,34,0.07)',
       display: 'flex', alignItems: 'center',
@@ -94,7 +122,7 @@ function EWNav({ activePage = 'work' }) {
       <a href="../index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
         <img src="../assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
       </a>
-      <div style={{ display: 'flex', gap: 24 }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
         {[
           ['work',   'Work',   '../index.html#case-studies'],
           ['about',  'About',  '../about.html'],
@@ -104,15 +132,35 @@ function EWNav({ activePage = 'work' }) {
             target={id === 'resume' ? '_blank' : undefined}
             rel={id === 'resume' ? 'noopener noreferrer' : undefined}
             style={{
-              fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
-              letterSpacing: '0.01em', textDecoration: 'none',
-              color: activePage === id ? '#1C1C22' : '#7A7A85', transition: 'color 0.2s',
+              fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 14,
+              letterSpacing: '0.01em',
+              textDecoration: activePage === id ? 'underline' : 'none',
+              textUnderlineOffset: '4px',
+              color: activePage === id ? '#1C1C22' : '#67676F', transition: 'color 0.2s',
             }}
-            onMouseEnter={e => e.target.style.color = '#1C1C22'}
-            onMouseLeave={e => e.target.style.color = activePage === id ? '#1C1C22' : '#7A7A85'}>
+            onMouseEnter={e => { e.target.style.color = '#1C1C22'; e.target.style.textDecoration = 'underline'; }}
+            onMouseLeave={e => { e.target.style.color = activePage === id ? '#1C1C22' : '#67676F'; e.target.style.textDecoration = activePage === id ? 'underline' : 'none'; }}>
             {label}
           </a>
         )}
+        <div style={{ width: 1, height: 16, background: 'rgba(28,28,34,0.12)' }} />
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <button onClick={handleCopyEmail} style={{
+            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+            color: '#67676F', transition: 'color 0.15s ease', display: 'flex',
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = '#1C1C22'}
+            onMouseLeave={e => e.currentTarget.style.color = '#67676F'}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+          </button>
+          {copied && <div className="copied-toast">Email copied!</div>}
+        </div>
+        <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
+          style={{ color: '#67676F', transition: 'color 0.15s ease', display: 'flex' }}
+          onMouseEnter={e => e.currentTarget.style.color = '#1C1C22'}
+          onMouseLeave={e => e.currentTarget.style.color = '#67676F'}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
+        </a>
       </div>
     </nav>
   );
@@ -144,7 +192,7 @@ function EWFooter() {
           ].map(col =>
             <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{
-                fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 11,
+                fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 11,
                 color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em',
                 textTransform: 'lowercase', marginBottom: 2,
               }}>{col.heading}</div>
@@ -153,7 +201,7 @@ function EWFooter() {
                   target={l.external ? '_blank' : undefined}
                   rel={l.external ? 'noopener noreferrer' : undefined}
                   style={{
-                    fontFamily: 'Manrope, sans-serif', fontSize: 13,
+                    fontFamily: 'Switzer, sans-serif', fontSize: 13,
                     color: 'rgba(255,255,255,0.35)', letterSpacing: '0.01em',
                     textDecoration: 'none', transition: 'color 0.2s'
                   }}
@@ -167,7 +215,7 @@ function EWFooter() {
         </div>
       </div>
       <div style={{
-        padding: '0 36px 24px', fontFamily: 'Manrope, sans-serif',
+        padding: '0 36px 24px', fontFamily: 'Switzer, sans-serif',
         letterSpacing: '0.02em',
       }}>
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>Portfolio created with Claude Code :)</div>
@@ -247,16 +295,16 @@ const sectionLabel = {
   textTransform: 'uppercase', color: '#ED5632', marginBottom: 8,
 };
 
-/* Section H3 subheadings — Manrope medium weight */
+/* Section H3 subheadings — Inter medium weight */
 const sectionHeading = {
-  fontFamily: 'Manrope, sans-serif', fontWeight: 500,
+  fontFamily: 'Switzer, sans-serif', fontWeight: 500,
   fontSize: 'clamp(16px, 1.6vw, 20px)', lineHeight: 1.35,
   color: '#1C1C22', marginBottom: 8,
 };
 
 const bodyText = {
-  fontFamily: 'Manrope, sans-serif', fontWeight: 400,
-  fontSize: 14, lineHeight: '21px', color: '#7A7A85',
+  fontFamily: 'Switzer, sans-serif', fontWeight: 400,
+  fontSize: 14, lineHeight: '21px', color: '#67676F',
 };
 
 /* Horizontal padding is handled by the .content-pad CSS class (responsive clamp) */
@@ -264,8 +312,8 @@ const bodyText = {
 function GardenToursPage() {
   const [protoHovered, setProtoHovered] = React.useState(false);
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FFFBF4' }}>
-      <EWNav activePage="work" />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FCFDFE' }}>
+      <EWNav />
 
       {/* COVER — full width above the flex layout */}
       <img src="../assets/garden-tours-case-study/garden-tours-hero-image.png" alt="Garden Tours"
@@ -300,13 +348,13 @@ function GardenToursPage() {
                 ].map(({ label, value }) => (
                   <div key={label}>
                     <div style={{ ...mono, fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ED5632', marginBottom: 6 }}>{label}</div>
-                    <div style={{ fontFamily: 'Manrope, sans-serif', fontSize: 13, color: '#5A5A65', lineHeight: 1.65, whiteSpace: 'pre-line' }}>{value}</div>
+                    <div style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, color: '#5A5A65', lineHeight: 1.65, whiteSpace: 'pre-line' }}>{value}</div>
                   </div>
                 ))}
               </div>
 
               <div style={sectionLabel}>Overview</div>
-              <h3 style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 'clamp(15px, 1.5vw, 18px)', lineHeight: 1.55, color: '#1C1C22', marginBottom: 8 }}>
+              <h3 style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 'clamp(15px, 1.5vw, 18px)', lineHeight: 1.55, color: '#1C1C22', marginBottom: 8 }}>
                 How can we develop interactive digital technology that will enhance the visitor experience of Duncan Terrace Gardens?
               </h3>
               <p style={{ ...bodyText, marginBottom: 24 }}>
@@ -337,8 +385,8 @@ function GardenToursPage() {
                   <div key={title} style={{ background: '#FFFFFF', borderRadius: 4, overflow: 'hidden', border: '1px solid #DAD7D7' }}>
                     <img src={img} alt={title} style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }} />
                     <div style={{ padding: '12px 16px 16px' }}>
-                      <div style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 16, color: '#1C1C22', marginBottom: 4 }}>{title}</div>
-                      <div style={{ fontFamily: 'Manrope, sans-serif', fontSize: 12, color: '#7A7A85' }}>{sub}</div>
+                      <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 16, color: '#1C1C22', marginBottom: 4 }}>{title}</div>
+                      <div style={{ fontFamily: 'Switzer, sans-serif', fontSize: 12, color: '#67676F' }}>{sub}</div>
                     </div>
                   </div>
                 ))}
@@ -386,7 +434,7 @@ function GardenToursPage() {
                       border: chosen ? 'none' : '1px solid rgba(255,255,255,0.12)',
                     }}>
                       <div style={{ ...mono, fontSize: 10, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: chosen ? '#1C1C22' : 'rgba(255,255,255,0.45)', marginBottom: 8 }}>{title}</div>
-                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: 13, lineHeight: '19px', color: chosen ? '#5A5A65' : 'rgba(255,255,255,0.6)', marginBottom: chosen ? 14 : 0 }}>{desc}</p>
+                      <p style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, lineHeight: '19px', color: chosen ? '#5A5A65' : 'rgba(255,255,255,0.6)', marginBottom: chosen ? 14 : 0 }}>{desc}</p>
                       {chosen && (
                         <div style={{ ...mono, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1C1C22', background: '#EEEDF0', display: 'inline-block', padding: '4px 9px', borderRadius: 2 }}>
                           Chosen ✓
@@ -417,11 +465,11 @@ function GardenToursPage() {
                       <img src={img} alt={title} style={{ height: 64, objectFit: 'contain' }} />
                     </div>
                     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                      <div style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 400, fontSize: 16, color: '#1C1C22', marginBottom: 6 }}>{title}</div>
-                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: 13, color: '#7A7A85', lineHeight: '19px', marginBottom: 12 }}>{desc}</p>
+                      <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 16, color: '#1C1C22', marginBottom: 6 }}>{title}</div>
+                      <p style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, color: '#67676F', lineHeight: '19px', marginBottom: 12 }}>{desc}</p>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 'auto' }}>
                         {tags.map(t => (
-                          <span key={t} style={{ ...mono, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#7A7A85', border: '1px solid rgba(28,28,34,0.15)', borderRadius: 2, padding: '3px 7px' }}>{t}</span>
+                          <span key={t} style={{ ...mono, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#67676F', border: '1px solid rgba(28,28,34,0.15)', borderRadius: 2, padding: '3px 7px' }}>{t}</span>
                         ))}
                       </div>
                     </div>
@@ -482,7 +530,7 @@ function GardenToursPage() {
               </p>
               <a href="https://aistudio.google.com/apps/drive/1ySHx5BL7hf8wUL61CnDNJAwP2DTfPp3P?fullscreenApplet=true" target="_blank" rel="noopener noreferrer" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
+                fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 14,
                 color: '#1C1C22', textDecoration: 'none', borderBottom: '1px solid #1C1C22', paddingBottom: 2,
                 marginBottom: 20,
               }}>View live prototype →</a>
@@ -512,19 +560,19 @@ function GardenToursPage() {
                 {['User testing, in context', 'Stakeholder collaboration / adoption', 'Explore technical constraints'].map((step, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 20 }}>
                     <span style={{ ...mono, fontSize: 12, fontWeight: 500, color: '#ED5632', minWidth: 24 }}>0{i + 1}</span>
-                    <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: 15, color: '#5A5A65' }}>{step}</span>
+                    <span style={{ fontFamily: 'Switzer, sans-serif', fontSize: 15, color: '#5A5A65' }}>{step}</span>
                   </div>
                 ))}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
                 <a href="../index.html" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
-                  fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
+                  fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 14,
                   color: '#1C1C22', textDecoration: 'none', borderBottom: '1px solid #1C1C22', paddingBottom: 2,
                 }}>← Back to all work</a>
                 <a href="yogapedia.html" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
-                  fontFamily: 'Manrope, sans-serif', fontWeight: 500, fontSize: 14,
+                  fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 14,
                   color: '#1C1C22', textDecoration: 'none', borderBottom: '1px solid #1C1C22', paddingBottom: 2,
                 }}>Next: Yogapedia →</a>
               </div>
