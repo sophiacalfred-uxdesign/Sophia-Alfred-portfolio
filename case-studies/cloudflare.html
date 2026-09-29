@@ -124,7 +124,115 @@
       .cta-dot { display: none; }
     }
 
-    .content-pad { padding: 0 clamp(40px, 5vw, 80px); max-width: 720px; }
+    .content-pad { padding: 0 clamp(40px, 5vw, 80px); max-width: 850px; }
+    .content-wide { padding: 0 clamp(40px, 5vw, 80px); max-width: 1080px; }
+
+    .problem-card {
+      padding: 10px 0;
+      border: none;
+      cursor: pointer;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .problem-number {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Switzer', sans-serif; font-weight: 600;
+      font-size: 12px; flex-shrink: 0; margin-top: 1px;
+      background: transparent; color: #A8A8B3;
+      border: 1px solid rgba(28,28,34,0.12);
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .problem-card.active .problem-number {
+      background: #1C1C22; color: #fff; border-color: #1C1C22;
+    }
+    .problem-card-title {
+      font-family: 'Switzer', sans-serif; font-weight: 600;
+      font-size: 15px; color: #6E6E78; margin-bottom: 4px; line-height: 1.4;
+      transition: color 0.2s ease;
+    }
+    .problem-card.active .problem-card-title {
+      color: #1C1C22;
+    }
+    .problem-card-desc {
+      font-family: 'Switzer', sans-serif; font-weight: 400;
+      font-size: 13px; color: #6E6E78; line-height: 1.5;
+    }
+    .problem-image-wrap {
+      position: relative; border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(28,28,34,0.08); margin-bottom: 8px;
+    }
+    .problem-image-wrap img {
+      display: block; width: 100%; height: auto;
+    }
+    .problem-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.4);
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .problem-highlight {
+      position: absolute;
+      box-shadow: 0 0 0 3px rgba(28,28,34,0.15);
+      border-radius: 6px;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .problem-hint {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #A8A8B3; text-align: right; margin-top: 0px;
+    }
+    .expand-btn {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(28,28,34,0.7); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s ease;
+      z-index: 2;
+    }
+    .problem-image-wrap:hover .expand-btn { opacity: 1; }
+    .expand-btn:hover { background: rgba(28,28,34,0.9); }
+    .image-modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px;
+      animation: modalFadeIn 0.2s ease;
+    }
+    .modal-inner {
+      display: flex; gap: 12px; align-items: flex-start;
+      max-width: calc(100vw - 120px); cursor: default;
+    }
+    .image-modal-panel {
+      background: #fff; border-radius: 12px;
+      max-width: 1100px; width: 100%;
+      max-height: calc(100vh - 12px);
+      overflow-y: auto;
+      padding: 24px 32px 32px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    }
+    .image-modal-panel::-webkit-scrollbar { width: 8px; }
+    .image-modal-panel::-webkit-scrollbar-track { background: transparent; margin: 8px 0; }
+    .image-modal-panel::-webkit-scrollbar-thumb {
+      background: #A8A8B3; border-radius: 4px;
+      border-right: 2px solid #fff;
+    }
+    .image-modal-panel img {
+      max-width: 100%; height: auto;
+      border-radius: 8px; display: block;
+    }
+    .modal-close-btn {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: rgba(255,255,255,0.9); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .modal-close-btn:hover { background: #fff; }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
     @media (max-width: 768px) {
       .sidenav { display: none; }
@@ -276,9 +384,12 @@ function EWFooter() {
   );
 }
 
-const SECTION_IDS = ['overview'];
+const SECTION_IDS = ['overview', 'problem', 'process', 'solution'];
 const NAV_LINKS = [
-  { id: 'overview', label: 'Overview' },
+  { id: 'overview', label: 'Background' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'process', label: 'Process' },
+  { id: 'solution', label: 'Solution' },
 ];
 
 const ArrowLeft = () => (
@@ -312,6 +423,10 @@ function SideNav() {
   return (
     <aside className="sidenav">
       <div className="sidenav-top">
+        <a href="../index.html" className="sidenav-link home-link" style={{ marginBottom: 16 }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"></path></svg>
+          Home
+        </a>
 
         {NAV_LINKS.map(({ id, label, sub }) => (
           <a key={id} href={`#${id}`}
@@ -320,16 +435,10 @@ function SideNav() {
           </a>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <a href="../index.html" className="sidenav-link home-link">
-          <ArrowLeft /> Home
-        </a>
-        <a href="#overview"
-          className="sidenav-link home-link"
-          onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-          <ArrowUp /> Back to top
-        </a>
-      </div>
+      <a href="#overview" className="sidenav-link home-link"
+        onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+        <ArrowUp /> Back to top
+      </a>
     </aside>
   );
 }
@@ -435,7 +544,7 @@ function HeroGridWrapper({ children, hidden }) {
 
   return (
     <div ref={wrapRef} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}
-      style={{ position: 'relative', overflow: 'hidden' }}>
+      style={{ position: 'relative' }}>
       {!hidden && <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <DotGrid width={dims.w} height={dims.h} mouseX={mouse.x} mouseY={mouse.y} />
       </div>}
@@ -450,8 +559,13 @@ const bodyText = {
   lineHeight: '24px', color: '#5A5A65',
 };
 const sectionLabel = {
-  ...mono, fontSize: 11, fontWeight: 500, letterSpacing: '0.1em',
-  textTransform: 'uppercase', color: '#F4A144', marginBottom: 8,
+  fontFamily: "'Self Modern', serif", fontSize: 16, fontWeight: 400,
+  color: '#6E6E78', marginBottom: 8,
+};
+const sectionHeading = {
+  fontFamily: 'Switzer, sans-serif', fontWeight: 500,
+  fontSize: 'clamp(18px, 1.8vw, 22px)', lineHeight: 1.4,
+  color: '#1C1C22', marginBottom: 16,
 };
 
 function GridSnappedHero({ children }) {
@@ -478,6 +592,519 @@ function GridSnappedHero({ children }) {
   }, []);
 
   return <div ref={ref}>{children}</div>;
+}
+
+const PROBLEMS = [
+  {
+    title: 'Overwhelming, data dense layout',
+    desc: 'Complicated charts required a lot of context or expertise to interpret.',
+    highlight: { top: '15%', left: '15%', width: '83%', height: '83%' },
+  },
+  {
+    title: 'No clear path through the content',
+    desc: 'The bento-box grid gave every chart equal visual weight, making it hard to know where to start.',
+    highlight: { top: '50%', left: '15%', width: '83%', height: '48%' },
+  },
+  {
+    title: 'Lacking Cloudflare branding',
+    desc: "Radar's styling didn't align with Cloudflare's broader brand.",
+    highlight: null,
+  },
+  {
+    title: 'Poor information architecture',
+    desc: 'Users reported difficulty finding the information they needed.',
+    highlight: { top: '5%', left: '0%', width: '14%', height: '95%' },
+  },
+];
+
+function ProblemSection() {
+  const [active, setActive] = React.useState(0);
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!modalOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setModalOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [modalOpen]);
+
+  return (
+    <div>
+      <div style={sectionLabel}>The Problem</div>
+      <h2 style={sectionHeading}>The existing homepage was too complex.</h2>
+
+      <div className="problem-image-wrap" onClick={() => setModalOpen(true)} style={{ cursor: 'zoom-in' }}>
+        <img src="../assets/cloudflare/oldRadar.png" alt="Old Cloudflare Radar landing page" />
+        {active !== null && (() => {
+          const raw = PROBLEMS[active].highlight;
+          if (!raw) return null;
+          const holes = Array.isArray(raw) ? raw : [raw];
+          const cutouts = holes.map(h => {
+            const l = parseFloat(h.left), t = parseFloat(h.top);
+            const w = parseFloat(h.width), ht = parseFloat(h.height);
+            const r = l + w, b = t + ht;
+            return `${l}% ${t}%, ${l}% ${b}%, ${r}% ${b}%, ${r}% ${t}%, ${l}% ${t}%`;
+          }).join(', ');
+          return (
+            <div className="problem-overlay" style={{
+              opacity: 1,
+              clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${cutouts})`,
+            }} />
+          );
+        })()}
+        <button className="expand-btn" onClick={() => setModalOpen(true)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+            <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="problem-hint">HOVER CARDS TO EXPLORE</div>
+
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr',
+        gap: 8, marginTop: 10,
+      }}>
+        {PROBLEMS.map((p, i) => (
+          <div
+            key={i}
+            className={`problem-card${active === i ? ' active' : ''}`}
+            onMouseEnter={() => setActive(i)}
+          >
+            <div className="problem-number">{i + 1}</div>
+            <div>
+              <div className="problem-card-title">{p.title}</div>
+              <div className="problem-card-desc">{p.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {modalOpen && (
+        <div className="image-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-inner" onClick={e => e.stopPropagation()}>
+          <div className="image-modal-panel">
+            <div className="problem-image-wrap" style={{ marginBottom: 8 }}>
+              <img src="../assets/cloudflare/oldRadar.png" alt="Old Cloudflare Radar landing page" />
+              {active !== null && (() => {
+                const raw = PROBLEMS[active].highlight;
+                if (!raw) return null;
+                const holes = Array.isArray(raw) ? raw : [raw];
+                const cutouts = holes.map(h => {
+                  const l = parseFloat(h.left), t = parseFloat(h.top);
+                  const w = parseFloat(h.width), ht = parseFloat(h.height);
+                  const r = l + w, b = t + ht;
+                  return `${l}% ${t}%, ${l}% ${b}%, ${r}% ${b}%, ${r}% ${t}%, ${l}% ${t}%`;
+                }).join(', ');
+                return (
+                  <div className="problem-overlay" style={{
+                    opacity: 1,
+                    clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${cutouts})`,
+                  }} />
+                );
+              })()}
+            </div>
+
+            <div className="problem-hint">CLICK CARDS TO EXPLORE</div>
+
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 1fr',
+              gap: 4, marginTop: 2,
+            }}>
+              {PROBLEMS.map((p, i) => (
+                <div
+                  key={i}
+                  className={`problem-card${active === i ? ' active' : ''}`}
+                  onClick={() => setActive(i)}
+                >
+                  <div className="problem-number">{i + 1}</div>
+                  <div>
+                    <div className="problem-card-title">{p.title}</div>
+                    <div className="problem-card-desc">{p.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button className="modal-close-btn" onClick={() => setModalOpen(false)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C1C22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Venn Diagram: Design Language ── */
+const PILLARS = [
+  {
+    id: 'marketing',
+    label: 'Marketing',
+    desc: 'Approachable, visual pages like cloudflare.com',
+    example: 'cloudflare.com',
+    img: '../assets/cloudflare/marketing.png',
+  },
+  {
+    id: 'content',
+    label: 'Content',
+    desc: 'Structured and navigable like our blog and Dev Docs',
+    example: 'blog.cloudflare.com',
+    img: '../assets/cloudflare/content.png',
+  },
+  {
+    id: 'product',
+    label: 'Product',
+    desc: 'Component-driven, built with Cloudflare\'s design system.',
+    example: 'Cloudflare Dashboard',
+    img: '../assets/cloudflare/product.png',
+  },
+];
+
+function VennDiagram() {
+  const [hovered, setHovered] = React.useState(null);
+  const r = 130;
+  const cx = 200, cy = 200;
+  const offset = 65;
+  const circles = [
+    { id: 'marketing', x: cx, y: cy - offset, labelX: cx, labelY: cy - offset - r * 0.5 },
+    { id: 'content', x: cx - offset * 0.87, y: cy + offset * 0.5, labelX: cx - offset * 0.87 - r * 0.55, labelY: cy + offset * 0.5 + r * 0.25 },
+    { id: 'product', x: cx + offset * 0.87, y: cy + offset * 0.5, labelX: cx + offset * 0.87 + r * 0.55, labelY: cy + offset * 0.5 + r * 0.25 },
+  ];
+
+  const activePillar = PILLARS.find(p => p.id === hovered);
+
+  return (
+    <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
+      <div style={{ width: 320, flexShrink: 0 }}>
+        <svg viewBox="0 0 400 370" style={{ width: '100%' }}>
+        <defs>
+          {circles.map(c => (
+            <clipPath key={`clip-${c.id}`} id={`clip-${c.id}`}>
+              <circle cx={c.x} cy={c.y} r={r} />
+            </clipPath>
+          ))}
+        </defs>
+        {circles.map(c => (
+          <g key={c.id}>
+            <circle
+              cx={c.x} cy={c.y} r={r}
+              fill="transparent"
+              stroke={hovered === c.id ? '#1C1C22' : '#D0D0D8'}
+              strokeWidth={hovered === c.id ? 1.5 : 1}
+              style={{ transition: 'stroke 0.2s ease, stroke-width 0.2s ease', cursor: 'pointer' }}
+              onMouseEnter={() => setHovered(c.id)}
+              onMouseLeave={() => setHovered(null)}
+            />
+            <text x={c.labelX} y={c.labelY} textAnchor="middle"
+              style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 500, letterSpacing: '0.08em', fill: hovered === c.id ? '#1C1C22' : '#A8A8B3', transition: 'fill 0.2s', pointerEvents: 'none' }}>
+              {c.id.toUpperCase()}
+            </text>
+          </g>
+        ))}
+        <g clipPath="url(#clip-marketing)">
+          <g clipPath="url(#clip-content)">
+            <circle cx={circles[2].x} cy={circles[2].y} r={r}
+              fill={hovered === 'radar' ? '#D0D0D8' : 'transparent'}
+              style={{ transition: 'fill 0.2s ease', cursor: 'pointer', pointerEvents: 'all' }}
+              onMouseEnter={() => setHovered('radar')}
+              onMouseLeave={() => setHovered(null)}
+            />
+          </g>
+        </g>
+        <text x={cx} y={cy + 4} textAnchor="middle"
+          onMouseEnter={() => setHovered('radar')}
+          onMouseLeave={() => setHovered(null)}
+          style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 500, letterSpacing: '0.08em', fill: hovered === 'radar' ? '#1C1C22' : '#A8A8B3', cursor: 'pointer', transition: 'fill 0.2s' }}>
+          RADAR
+        </text>
+      </svg>
+      </div>
+
+      <div style={{ flex: 1, minWidth: 200, display: 'flex', flexDirection: 'column' }}>
+        {hovered === null && (
+          <div className="problem-hint" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            HOVER CIRCLES TO EXPLORE
+          </div>
+        )}
+        {hovered === 'radar' && (
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <div style={{ ...mono, fontSize: 11, letterSpacing: '0.08em', color: '#A8A8B3', textTransform: 'uppercase', marginBottom: 8 }}>
+              The intersection
+            </div>
+            <p style={{ ...bodyText, marginBottom: 12 }}>
+              New Radar combines all three. 
+            </p>
+            <img src="../assets/cloudflare/new-radar.png" alt="Cloudflare Radar" style={{ width: '100%', flex: 1, minHeight: 120, objectFit: 'cover', borderRadius: 8 }} />
+          </div>
+        )}
+        {activePillar && (
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <div style={{ ...mono, fontSize: 11, letterSpacing: '0.08em', color: '#A8A8B3', textTransform: 'uppercase', marginBottom: 8 }}>
+              {activePillar.label}
+            </div>
+            <p style={{ ...bodyText, marginBottom: 12 }}>{activePillar.desc}</p>
+            <img src={activePillar.img} alt={activePillar.label} style={{ width: '100%', flex: 1, minHeight: 120, objectFit: 'cover', borderRadius: 8 }} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Map Stepper: Iteration Progression ── */
+const MAP_STEPS = [
+  { label: 'Early exploration', caption: 'Dense data visualization focused on conveying credibility through volume. Too much information competing for attention.', video: '../assets/cloudflare/early-exploration.mov' },
+  { label: 'Marketing direction', caption: 'Cleaner and more approachable, but risked making live data feel static or overly summarized.', video: '../assets/cloudflare/marketing-direction.mp4' },
+  { label: 'Final direction', caption: 'Balances data richness with approachability. Still feels like live data, but easier to read and navigate.', video: '../assets/cloudflare/current-direction.mov' },
+];
+
+function MapStepper() {
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!modalOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setModalOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [modalOpen]);
+
+  const stepperBar = (clickMode) => (
+    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ width: 16, height: 1, background: 'rgba(28,28,34,0.12)', flexShrink: 0 }} />
+      {MAP_STEPS.map((step, i) => (
+        <React.Fragment key={i}>
+          <div
+            onClick={() => setActiveStep(i)}
+            onMouseEnter={clickMode ? undefined : () => setActiveStep(i)}
+            className="problem-number"
+            style={{
+              cursor: 'pointer', flexShrink: 0, marginTop: 0,
+              ...(activeStep === i ? { background: '#1C1C22', color: '#fff', borderColor: '#1C1C22' } : {}),
+            }}
+          >
+            {i + 1}
+          </div>
+          {i < MAP_STEPS.length - 1 && (
+            <div style={{ flex: 1, height: 1, background: 'rgba(28,28,34,0.12)' }} />
+          )}
+        </React.Fragment>
+      ))}
+      <div style={{ width: 16, height: 1, background: 'rgba(28,28,34,0.12)', flexShrink: 0 }} />
+    </div>
+  );
+
+  const stepImage = (
+    <video
+      key={MAP_STEPS[activeStep].video}
+      src={MAP_STEPS[activeStep].video}
+      autoPlay muted loop playsInline
+      style={{
+        width: '100%', aspectRatio: '16/9', objectFit: 'cover',
+        borderRadius: 12, display: 'block', background: '#F4F4F6',
+      }}
+    />
+  );
+
+  const stepCaption = (
+    <div style={{ marginTop: 12 }}>
+      <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 600, fontSize: 14, color: '#1C1C22', marginBottom: 4 }}>
+        {MAP_STEPS[activeStep].label}
+      </div>
+      <p style={{ ...bodyText, fontSize: 13 }}>
+        {MAP_STEPS[activeStep].caption}
+      </p>
+    </div>
+  );
+
+  return (
+    <div>
+      {stepperBar(false)}
+
+      <div className="problem-image-wrap" onClick={() => setModalOpen(true)} style={{ cursor: 'zoom-in', borderRadius: 12 }}>
+        {stepImage}
+        <button className="expand-btn" onClick={() => setModalOpen(true)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+            <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+          </svg>
+        </button>
+      </div>
+
+      {stepCaption}
+
+      {modalOpen && (
+        <div className="image-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-inner" onClick={e => e.stopPropagation()} style={{ height: 'calc(100vh - 64px)' }}>
+            <div className="image-modal-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              {stepperBar(true)}
+              <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                <video
+                  key={MAP_STEPS[activeStep].video}
+                  src={MAP_STEPS[activeStep].video}
+                  autoPlay muted loop playsInline
+                  style={{
+                    flex: 1, minHeight: 0, width: '100%', objectFit: 'cover',
+                    borderRadius: 12, display: 'block', background: '#F4F4F6',
+                  }}
+                />
+                {stepCaption}
+              </div>
+            </div>
+            <button className="modal-close-btn" onClick={() => setModalOpen(false)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C1C22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Hierarchy Demo: Hover to Reveal ── */
+const HIERARCHY_ITEMS = [
+  { num: '01', title: 'Interactive map', desc: 'A global view of traffic and outages that orients users geographically.' },
+  { num: '02', title: 'Key metrics bar', desc: 'Timely, high-level data points that ground the page in live context.' },
+  { num: '03', title: 'Tabbed data sections', desc: 'Organized categories that let users explore at their own pace.' },
+  { num: '04', title: 'Trends and stories', desc: 'Curated insights that connect data points to real-world events.' },
+];
+
+function HierarchyDemo() {
+  const [hovered, setHovered] = React.useState(null);
+
+  const regions = [
+    { top: '0%', height: '35%' },
+    { top: '35%', height: '10%' },
+    { top: '45%', height: '35%' },
+    { top: '80%', height: '20%' },
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: 32, alignItems: 'stretch', flexWrap: 'wrap' }}>
+      <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {HIERARCHY_ITEMS.map((item, i) => (
+          <div key={i}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              padding: '12px 16px',
+              background: hovered === i ? '#F4F4F6' : 'transparent',
+              borderRadius: 8, cursor: 'pointer',
+              transition: 'background 0.2s ease',
+              display: 'flex', gap: 14, alignItems: 'flex-start',
+            }}>
+            <span style={{
+              fontFamily: "'Self Modern', serif", fontSize: 24, fontWeight: 400,
+              color: hovered === i ? '#1C1C22' : '#D0D0D8',
+              lineHeight: 1, transition: 'color 0.2s ease', flexShrink: 0,
+              minWidth: 32,
+            }}>
+              {item.num}
+            </span>
+            <div>
+              <div style={{
+                fontFamily: 'Switzer, sans-serif', fontWeight: 600, fontSize: 15,
+                color: hovered === i ? '#1C1C22' : '#6E6E78',
+                marginBottom: 4, transition: 'color 0.2s ease',
+              }}>
+                {item.title}
+              </div>
+              <div style={{ ...bodyText, fontSize: 13, color: '#6E6E78' }}>
+                {item.desc}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ flex: '1 1 340px', position: 'relative' }}>
+        <div style={{
+          width: '100%', aspectRatio: '4/5',
+          background: '#F4F4F6', border: '1.5px dashed #D0D0D8',
+          borderRadius: 12, overflow: 'hidden', position: 'relative',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{ ...mono, fontSize: 10, color: '#A8A8B3', letterSpacing: '0.06em' }}>
+            NEW LANDING PAGE
+          </span>
+          {hovered !== null && (
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'rgba(0,0,0,0.35)',
+              transition: 'opacity 0.2s ease',
+              pointerEvents: 'none',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: regions[hovered].top,
+                left: 0, right: 0,
+                height: regions[hovered].height,
+                background: 'rgba(255,255,255,0.7)',
+                border: '2px solid rgba(28,28,34,0.2)',
+                transition: 'all 0.25s ease',
+              }} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Before/After Toggle ── */
+function BeforeAfterToggle() {
+  const [showing, setShowing] = React.useState('after');
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+        <div style={{
+          ...mono, fontSize: 10, fontWeight: 500,
+          letterSpacing: '0.08em', color: '#A8A8B3',
+          textTransform: 'uppercase',
+        }}>
+          Toggle to compare
+        </div>
+        <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(28,28,34,0.12)' }}>
+          {['after', 'before'].map(tab => (
+            <button key={tab}
+              onClick={() => setShowing(tab)}
+              style={{
+                padding: '8px 20px', border: 'none', cursor: 'pointer',
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: 11, fontWeight: 500, letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                background: showing === tab ? '#1C1C22' : '#fff',
+                color: showing === tab ? '#fff' : '#6E6E78',
+                transition: 'all 0.2s ease',
+              }}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{
+          width: '100%', aspectRatio: '16/9',
+          background: showing === 'after' ? '#F4F4F6' : '#EEEEF0',
+          border: '1.5px dashed #D0D0D8',
+          borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.3s ease',
+        }}>
+          <span style={{ ...mono, fontSize: 10, color: '#A8A8B3', letterSpacing: '0.06em' }}>
+            {showing === 'after' ? 'NEW RADAR LANDING PAGE' : 'OLD RADAR LANDING PAGE'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function CloudflarePage() {
@@ -600,12 +1227,136 @@ function CloudflarePage() {
         <SideNav />
 
         <main style={{ flex: 1, minWidth: 0 }}>
-          <section id="overview" style={{ paddingTop: 48 }}>
+          <section id="overview" style={{ paddingTop: 48, paddingBottom: 24 }}>
             <div className="content-pad">
-              <div style={sectionLabel}>Overview</div>
-              <p style={{ ...bodyText, marginBottom: 48 }}>
-                Overview content coming soon.
+              <div style={sectionLabel}>Background</div>
+              <h2 style={sectionHeading}>Redesigning Radar for the non-technical audiences, without sacrificing the depth.</h2>
+              <p style={{ ...bodyText, marginBottom: 16 }}>
+                Cloudflare Radar is a free, public platform that surfaces real-time data on Internet traffic, security threats, and outages worldwide.
               </p>
+              <p style={{ ...bodyText, marginBottom: 16 }}>
+                Originally, Radar was used mainly for technical users such as network operators and academic researchers. But Radar's audience has been steadily growing to include journalists and human rights groups use it to track outages and Internet events tied to geopolitics and natural disasters.
+              </p>
+              <p style={{ ...bodyText, marginBottom: 24 }}>
+                The challenge was to redesign Radar's entry point to serve this broader audience making the data more approachable and the page easier to scan without losing the depth and precision that power users depend on.
+              </p>
+              <a href="#solution" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: 11,
+                fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase',
+                color: '#1C1C22', textDecoration: 'none',
+                padding: '8px 14px', borderRadius: 6,
+                border: '1px solid rgba(28,28,34,0.15)',
+                transition: 'background 0.15s ease',
+                marginBottom: 24,
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F4F4F6'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                Jump to solution
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" />
+                </svg>
+              </a>
+              <img src="../assets/cloudflare/radar-mockup1.png" alt="New Cloudflare Radar" style={{
+                width: '100%', borderRadius: 12, display: 'block',
+                border: '1px solid rgba(28,28,34,0.08)',
+              }} />
+            </div>
+          </section>
+
+          <section id="problem" style={{ paddingTop: 48, paddingBottom: 24 }}>
+            <div className="content-pad">
+              <ProblemSection />
+            </div>
+          </section>
+
+          <section id="process" style={{ paddingTop: 48, paddingBottom: 24 }}>
+            {/* Design Language */}
+            <div className="content-pad" style={{ marginBottom: 16 }}>
+              <div style={sectionLabel}>The Process</div>
+              <h2 style={sectionHeading}>Defining a Radar's design language.</h2>
+              <p style={{ ...bodyText, marginBottom: 16 }}>
+                To develop Radar's visual direction, I looked across Cloudflare's content ecosystem, which exists in three pillars: <strong>marketing</strong>, <strong>content</strong>, and <strong>product</strong>.
+              </p>
+              <p style={{ ...bodyText, marginBottom: 24 }}>
+                I realized that Radar sits at the intersection, so I developed a strategy to blend design aspects of all three: approachable like marketing, structured and navigable like content, and maintainable by migrating to Cloudflare's design system.
+              </p>
+            </div>
+            <div className="content-pad" style={{ marginBottom: 64 }}>
+              <VennDiagram />
+            </div>
+
+            {/* Map Iteration */}
+            <div className="content-pad" style={{ marginBottom: 24 }}>
+              <h2 style={sectionHeading}>Balancing data richness and approachability.</h2>
+              <p style={{ ...bodyText, marginBottom: 16 }}>
+                In order to convey Radar's global perspective, I knew that the hero section needed to be a map.
+              </p>
+              <p style={{ ...bodyText, marginBottom: 24 }}>
+                This map went through many iterations. Early versions were too dense while later versions moved too far toward marketing-style visuals, feeling approachable but risking making Radar's data feel static. The current direction sits between those two extremes.
+              </p>
+            </div>
+            <div className="content-pad" style={{ marginBottom: 64 }}>
+              <MapStepper />
+            </div>
+
+            {/* Navigation Redesign */}
+            <div className="content-pad">
+              <div style={sectionLabel}>Navigation redesign</div>
+              <h2 style={sectionHeading}>Restructuring information architecture for broader audiences.</h2>
+              <p style={{ ...bodyText, marginBottom: 16 }}>
+                The original navigation was organized around technical categories familiar to network operators. We restructured it to guide users through the content by topic and relevance, making it intuitive for newcomers while still efficient for experts.
+              </p>
+              <div style={{
+                width: '100%', aspectRatio: '16/9',
+                background: '#F4F4F6', border: '1.5px dashed #D0D0D8',
+                borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ ...mono, fontSize: 10, color: '#A8A8B3', letterSpacing: '0.06em' }}>NAVIGATION REDESIGN</span>
+              </div>
+            </div>
+          </section>
+
+          <section id="solution" style={{ paddingTop: 48, paddingBottom: 80 }}>
+            {/* Landing Page Hierarchy */}
+            <div className="content-pad" style={{ marginBottom: 24 }}>
+              <div style={sectionLabel}>The Solution</div>
+              <h2 style={sectionHeading}>A new landing page with a clear reading order.</h2>
+              <p style={{ ...bodyText, marginBottom: 24 }}>
+                The redesigned landing page introduces a deliberate information hierarchy. Instead of a bento-box grid where every chart competes for attention, the page now sequences users from a global overview down into specific data categories.
+              </p>
+            </div>
+            <div className="content-wide" style={{ marginBottom: 64 }}>
+              <HierarchyDemo />
+            </div>
+
+            {/* Before / After */}
+            <div className="content-pad" style={{ marginBottom: 24 }}>
+              <h2 style={sectionHeading}>Comparing the old and new experience.</h2>
+            </div>
+            <div className="content-wide" style={{ marginBottom: 64 }}>
+              <BeforeAfterToggle />
+            </div>
+
+            {/* Data Set Pages */}
+            <div className="content-pad">
+              <div style={sectionLabel}>Data set pages</div>
+              <h2 style={sectionHeading}>Extending the design language across every data view.</h2>
+              <p style={{ ...bodyText, marginBottom: 16 }}>
+                The redesign extended beyond the landing page. Each data set page was updated to use the same visual language, with consistent chart components, clearer labels, and a more approachable layout that scales across Radar's full range of data.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {['TRAFFIC PAGE', 'ADOPTION PAGE', 'SECURITY PAGE', 'OUTAGES PAGE'].map(label => (
+                  <div key={label} style={{
+                    aspectRatio: '4/3', background: '#F4F4F6',
+                    border: '1.5px dashed #D0D0D8', borderRadius: 8,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{ ...mono, fontSize: 10, color: '#A8A8B3', letterSpacing: '0.06em' }}>{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         </main>
