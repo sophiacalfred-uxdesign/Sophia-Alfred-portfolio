@@ -48,7 +48,11 @@
     }
 
     .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    @media (max-width: 768px) { .project-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .project-grid { grid-template-columns: 1fr; }
+      .resume-current-tag { display: none; }
+      .projects-heading { margin-top: 32px; }
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -236,7 +240,7 @@ function EWFooter() {
 }
 
 /* ── ProjectCard ── */
-function ProjectCard({ title, meta, description, image, video, bgColor, href, children, stretchMedia, cursorLabel, cursorBg, videoHeight, flexGrow }) {
+function ProjectCard({ title, meta, description, image, video, bgColor, href, onClick, children, stretchMedia, cursorLabel, cursorBg, videoHeight, thumbHeight, aspectRatio, flexGrow, fillRow }) {
   const [hovered, setHovered] = React.useState(false);
   const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
 
@@ -244,13 +248,18 @@ function ProjectCard({ title, meta, description, image, video, bgColor, href, ch
     setMousePos({ x: e.clientX, y: e.clientY });
   };
 
+  const handleClick = () => {
+    if (onClick) { onClick(); }
+    else if (href) { window.location.href = href; }
+  };
+
   return (
     <div
-      onClick={() => href && (window.location.href = href)}
+      onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onMouseMove={cursorLabel ? handleMouseMove : undefined}
-      style={{ display: 'flex', flexDirection: 'column', gap: 16, cursor: cursorLabel ? 'none' : (href ? 'pointer' : 'default'), position: 'relative', flex: flexGrow ? 1 : undefined }}>
+      style={{ display: 'flex', flexDirection: 'column', gap: 16, cursor: cursorLabel ? 'none' : (href || onClick ? 'pointer' : 'default'), position: 'relative', flex: flexGrow ? 1 : undefined, height: fillRow ? '100%' : undefined }}>
 
       {/* Custom cursor label */}
       {cursorLabel && hovered && (
@@ -279,13 +288,15 @@ function ProjectCard({ title, meta, description, image, video, bgColor, href, ch
         transform: hovered ? 'scale(1.01)' : 'scale(1)',
         transition: 'transform 0.3s ease',
         position: 'relative',
-        flex: flexGrow ? 1 : undefined,
-        minHeight: flexGrow ? 200 : undefined,
+        flex: (flexGrow || fillRow) ? 1 : undefined,
+        minHeight: (flexGrow || fillRow) ? 200 : undefined,
+        height: thumbHeight || undefined,
+        aspectRatio: (!thumbHeight && !flexGrow && !fillRow && aspectRatio) ? aspectRatio : undefined,
       }}>
         {video && <video src={video} autoPlay muted loop playsInline
-          style={{ width: '100%', height: (flexGrow || videoHeight) ? '100%' : 'auto', objectFit: (flexGrow || videoHeight) ? 'cover' : 'unset', display: 'block' }} />}
+          style={{ width: '100%', height: (flexGrow || fillRow || videoHeight || thumbHeight || aspectRatio) ? '100%' : 'auto', objectFit: (flexGrow || fillRow || videoHeight || thumbHeight || aspectRatio) ? 'cover' : 'unset', display: 'block', position: fillRow ? 'absolute' : undefined, inset: fillRow ? 0 : undefined }} />}
         {image && !video && <img src={image} alt={title}
-          style={{ width: '100%', height: flexGrow ? '100%' : 'auto', objectFit: flexGrow ? 'cover' : undefined, display: 'block', position: flexGrow ? 'absolute' : undefined, inset: flexGrow ? 0 : undefined }} />}
+          style={{ width: '100%', height: (flexGrow || fillRow || thumbHeight || aspectRatio) ? '100%' : 'auto', objectFit: (flexGrow || fillRow || thumbHeight || aspectRatio) ? 'cover' : undefined, display: 'block', position: (flexGrow || fillRow) ? 'absolute' : undefined, inset: (flexGrow || fillRow) ? 0 : undefined }} />}
         {children}
         {/* Gradient overlay + meta on hover */}
         {meta && <div style={{
@@ -506,15 +517,14 @@ const PROJECTS_LEFT = [
     videoHeight: 'clamp(220px, 20vw, 380px)',
   },
   {
-    id: 'garden-tours',
-    title: 'Garden Tours',
-    meta: 'Interaction Design · Fall 2025 · Case Study',
-    description: 'Guided listening experiences for local London park.',
-    video: 'assets/garden-tours-cover.mov',
-    bgColor: '#B8BFEE',
-    stretchMedia: true,
-    href: 'case-studies/garden-tours.html',
-    flexGrow: true,
+    id: 'living-record',
+    title: 'The Living Record: Museum Exhibit',
+    meta: 'London Natural History Museum · Client Project · Spring 2026 · Case Study',
+    description: 'Exhibition design for the Urban Nature Project at the London Natural History Museum.',
+    video: 'assets/living-record-cover.mp4',
+    bgColor: '#C8D9A0',
+    href: 'case-studies/living-record.html',
+    aspectRatio: '1.4 / 1',
   },
   {
     id: 'memento',
@@ -523,6 +533,7 @@ const PROJECTS_LEFT = [
     description: 'An AI note taking and memory keeping application.',
     image: 'assets/memento-cover.png',
     bgColor: '#D4CDFF',
+    aspectRatio: '1.3 / 1',
     cursorLabel: 'CASE STUDY UNDER CONSTRUCTION!',
     cursorBg: '#ED5632',
   },
@@ -530,14 +541,15 @@ const PROJECTS_LEFT = [
 
 const PROJECTS_RIGHT = [
   {
-    id: 'living-record',
-    title: 'The Living Record: Museum Exhibit',
-    meta: 'London Natural History Museum · Client Project · Spring 2026 · Case Study',
-    description: 'Exhibition design for the Urban Nature Project at the London Natural History Museum.',
-    video: 'assets/living-record-cover.mp4',
-    bgColor: '#C8D9A0',
-    href: 'case-studies/living-record.html',
-    videoHeight: 'clamp(200px, 18vw, 340px)',
+    id: 'pay-per-use',
+    title: 'When AI Uses Your Work, You Should Get Paid',
+    meta: 'Cloudflare • Sept 2026 - Current',
+    description: 'A fair-pay model for the agentic web. Publishers earn when AI uses their work.',
+    video: 'assets/cloudflare-cover1.mp4',
+    bgColor: '#1C1C22',
+    cursorLabel: 'CURRENTLY BUILDING',
+    cursorBg: '#016FEB',
+    modal: 'pay-per-use',
   },
   {
     id: 'yogapedia',
@@ -546,19 +558,19 @@ const PROJECTS_RIGHT = [
     description: 'A yoga knowledge hub for poses, sequences, and teaching.',
     image: 'assets/yogapedia-cover.png',
     bgColor: '#F2E08A',
+    aspectRatio: '1.4 / 1',
     href: 'case-studies/yogapedia.html',
-    flexGrow: true,
   },
   {
-    id: 'design-system',
-    title: 'Design System Generator',
-    meta: 'Personal project · Winter 2026',
-    description: 'AI powered Design System Generator that creates a functional design foundation from text prompts.',
-    video: 'assets/design-system-cover.mp4',
-    bgColor: '#1C1C22',
-    videoHeight: 'clamp(200px, 18vw, 340px)',
-    cursorLabel: 'UNDER CONSTRUCTION',
-    cursorBg: '#ED5632',
+    id: 'garden-tours',
+    title: 'Garden Tours',
+    meta: 'Interaction Design · Fall 2025 · Case Study',
+    description: 'Guided listening experiences for local London park.',
+    video: 'assets/garden-tours-cover.mov',
+    bgColor: '#B8BFEE',
+    stretchMedia: true,
+    aspectRatio: '1.3 / 1',
+    href: 'case-studies/garden-tours.html',
   },
 ];
 
@@ -590,7 +602,7 @@ function Resume() {
             display: 'flex', alignItems: 'center', gap: 8,
           }}>
             {item.role}
-            {item.current && <span style={{
+            {item.current && <span className="resume-current-tag" style={{
               fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 10,
               letterSpacing: '0.04em', textTransform: 'uppercase',
               color: '#046EEB', background: 'rgba(4,110,235,0.08)',
@@ -607,10 +619,96 @@ function Resume() {
   );
 }
 
+/* ── Work-in-progress modal (Pay Per Use case study) ── */
+function WipModal({ onClose }) {
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 10000,
+        background: 'rgba(16,16,20,0.55)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 24, animation: 'fadeIn 0.2s ease',
+      }}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative', background: '#FCFDFE', borderRadius: 16,
+          width: 'min(92vw, 420px)', padding: '40px 32px 32px',
+          boxShadow: '0 24px 60px rgba(0,0,0,0.28)', textAlign: 'center',
+        }}>
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            position: 'absolute', top: 14, right: 14, width: 30, height: 30,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', borderRadius: 8, background: 'transparent',
+            color: '#6E6E78', cursor: 'pointer', transition: 'background 0.15s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = '#EEEEF1'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        <div style={{
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, fontWeight: 500,
+          letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ED5632',
+          marginBottom: 12,
+        }}>
+          Currently building!
+        </div>
+
+        <p style={{
+          fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 16,
+          lineHeight: '24px', letterSpacing: '0.01em', color: '#3A3A42',
+          margin: '0 0 24px',
+        }}>
+          Want to learn more about the project?
+        </p>
+
+        <a
+          href="https://blog.cloudflare.com/pay-per-use/"
+          target="_blank" rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            fontFamily: "'IBM Plex Mono', monospace", fontSize: 11,
+            fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase',
+            color: '#fff', background: '#1C1C22', textDecoration: 'none',
+            padding: '11px 18px', borderRadius: 8, transition: 'background 0.15s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = '#000'}
+          onMouseLeave={(e) => e.currentTarget.style.background = '#1C1C22'}
+        >
+          Check out the blog post
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 /* ── App ── */
 function App() {
   const blurbRef = React.useRef(null);
   const [blurbActive, setBlurbActive] = React.useState(false);
+  const [wipModalOpen, setWipModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (window.location.hash) {
@@ -650,21 +748,27 @@ function App() {
               <Resume />
             </div>
           </div>
-          <h2 id="case-studies" style={{
+          <h2 id="case-studies" className="projects-heading" style={{
             fontFamily: "'Self Modern', serif", fontWeight: 400,
             fontSize: 'clamp(24px, 3vw, 36px)', color: '#1C1C22', marginBottom: 8,
             scrollMarginTop: 56,
-          }}>Selected Work</h2>
-          <div className="project-grid" style={{ marginTop: 24 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-              {PROJECTS_LEFT.map(p => <ProjectCard key={p.id} {...p} />)}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-              {PROJECTS_RIGHT.map(p => <ProjectCard key={p.id} {...p} />)}
-            </div>
+          }}>Projects</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 24 }}>
+            {PROJECTS_LEFT.map((left, i) => {
+              const { modal, ...right } = PROJECTS_RIGHT[i] || {};
+              return (
+                <div key={left.id} className="project-grid" style={{ alignItems: 'stretch' }}>
+                  <ProjectCard {...left} />
+                  {PROJECTS_RIGHT[i] && (
+                    <ProjectCard {...right} fillRow={!right.aspectRatio} onClick={modal === 'pay-per-use' ? () => setWipModalOpen(true) : undefined} />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </NavHeroWrapper>
+      {wipModalOpen && <WipModal onClose={() => setWipModalOpen(false)} />}
       <EWFooter />
     </div>
   );
