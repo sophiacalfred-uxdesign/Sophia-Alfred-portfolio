@@ -40,6 +40,10 @@
       pointer-events: none;
       animation: toastPop 1.5s ease forwards;
     }
+    @media (max-width: 768px) {
+      .nav-links { display: none !important; }
+      .hamburger-btn { display: flex !important; }
+    }
   </style>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -52,63 +56,135 @@
 
 function EWNav({ activePage }) {
   const [copied, setCopied] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const handleCopyEmail = () => {
     try { navigator.clipboard.writeText('sophiacalfred@gmail.com'); } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
+  const navLinks = [
+    ['work', 'Work', '../index.html#case-studies'],
+    ['about', 'About', '../about.html'],
+    ['resume', 'Resume', '../assets/sophia-resume.pdf'],
+  ];
+
   return (
-    <nav style={{
-      width: '100%', height: 56, background: '#FCFDFE',
-      borderBottom: '1px solid rgba(28,28,34,0.07)',
-      display: 'flex', alignItems: 'center',
-      justifyContent: 'space-between', padding: '0 24px',
-      position: 'sticky', top: 0, zIndex: 100, boxSizing: 'border-box'
-    }}>
-      <a href="../index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-        <img src="../assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
-      </a>
-      <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-        {[
-          ['work',   'Work', '../index.html#case-studies'],
-          ['about',  'About',        '../about.html'],
-          ['resume', 'Resume',       '../assets/sophia-resume.pdf'],
-        ].map(([id, label, href]) =>
-          <a key={id} href={href}
-            target={id === 'resume' ? '_blank' : undefined}
-            rel={id === 'resume' ? 'noopener noreferrer' : undefined}
-            style={{
-              fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 14,
-              letterSpacing: '0.01em',
-              textDecoration: activePage === id ? 'underline' : 'none',
-              textUnderlineOffset: '4px',
-              color: activePage === id ? '#1C1C22' : '#67676F', transition: 'color 0.2s',
+    <React.Fragment>
+      <nav style={{
+        width: '100%', height: 56, background: '#FCFDFE',
+        borderBottom: '1px solid rgba(28,28,34,0.07)',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', padding: '0 24px',
+        position: 'sticky', top: 0, zIndex: 100, boxSizing: 'border-box'
+      }}>
+        <a href="../index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img src="../assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
+        </a>
+
+        <button className="hamburger-btn" onClick={() => setMenuOpen(true)} style={{
+          display: 'none', background: 'none', border: 'none', padding: 4, cursor: 'pointer',
+          color: '#1C1C22', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
+        <div className="nav-links" style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          {navLinks.map(([id, label, href]) =>
+            <a key={id} href={href}
+              target={id === 'resume' ? '_blank' : undefined}
+              rel={id === 'resume' ? 'noopener noreferrer' : undefined}
+              style={{
+                fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 14,
+                letterSpacing: '0.01em',
+                textDecoration: activePage === id ? 'underline' : 'none',
+                textUnderlineOffset: '4px',
+                color: activePage === id ? '#1C1C22' : '#67676F', transition: 'color 0.2s',
+              }}
+              onMouseEnter={e => { e.target.style.color = '#1C1C22'; e.target.style.textDecoration = 'underline'; }}
+              onMouseLeave={e => { e.target.style.color = activePage === id ? '#1C1C22' : '#67676F'; e.target.style.textDecoration = activePage === id ? 'underline' : 'none'; }}>
+              {label}
+            </a>
+          )}
+          <div style={{ width: 1, height: 16, background: 'rgba(28,28,34,0.12)' }} />
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <button onClick={handleCopyEmail} style={{
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              color: '#67676F', transition: 'color 0.15s ease', display: 'flex',
             }}
-            onMouseEnter={e => { e.target.style.color = '#1C1C22'; e.target.style.textDecoration = 'underline'; }}
-            onMouseLeave={e => { e.target.style.color = activePage === id ? '#1C1C22' : '#67676F'; e.target.style.textDecoration = activePage === id ? 'underline' : 'none'; }}>
-            {label}
-          </a>
-        )}
-        <div style={{ width: 1, height: 16, background: 'rgba(28,28,34,0.12)' }} />
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <button onClick={handleCopyEmail} style={{
-            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-            color: '#67676F', transition: 'color 0.15s ease', display: 'flex',
-          }}
+              onMouseEnter={e => e.currentTarget.style.color = '#1C1C22'}
+              onMouseLeave={e => e.currentTarget.style.color = '#67676F'}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+            </button>
+            {copied && <div className="copied-toast">Email copied!</div>}
+          </div>
+          <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
+            style={{ color: '#67676F', transition: 'color 0.15s ease', display: 'flex' }}
             onMouseEnter={e => e.currentTarget.style.color = '#1C1C22'}
             onMouseLeave={e => e.currentTarget.style.color = '#67676F'}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
-          </button>
-          {copied && <div className="copied-toast">Email copied!</div>}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
+          </a>
         </div>
-        <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
-          style={{ color: '#67676F', transition: 'color 0.15s ease', display: 'flex' }}
-          onMouseEnter={e => e.currentTarget.style.color = '#1C1C22'}
-          onMouseLeave={e => e.currentTarget.style.color = '#67676F'}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
-        </a>
-      </div>
-    </nav>
+      </nav>
+
+      {menuOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          background: 'rgba(252,253,254,0.97)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32,
+        }}>
+          <button onClick={() => setMenuOpen(false)} style={{
+            position: 'absolute', top: 16, right: 20,
+            background: 'none', border: 'none', cursor: 'pointer', color: '#1C1C22', padding: 4,
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {navLinks.map(([id, label, href]) =>
+            <a key={id} href={href}
+              onClick={() => setMenuOpen(false)}
+              target={id === 'resume' ? '_blank' : undefined}
+              rel={id === 'resume' ? 'noopener noreferrer' : undefined}
+              style={{
+                fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 22,
+                color: '#1C1C22', textDecoration: 'none', letterSpacing: '0.01em',
+              }}>
+              {label}
+            </a>
+          )}
+
+          <div style={{ width: 40, height: 1, background: 'rgba(28,28,34,0.12)' }} />
+
+          <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <button onClick={handleCopyEmail} style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                color: '#67676F', display: 'flex',
+              }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+              </button>
+              {copied && <div className="copied-toast">Email copied!</div>}
+            </div>
+            <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
+              style={{ color: '#67676F', display: 'flex' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
+            </a>
+          </div>
+        </div>
+      )}
+    </React.Fragment>
   );
 }
 
@@ -130,9 +206,10 @@ function EWFooter() {
               { label: 'Resume',   href: '../assets/sophia-resume.pdf', external: true },
             ]},
             { heading: 'work', links: [
+              { label: 'Cloudflare Radar',  href: 'cloudflare.html' },
               { label: 'The Living Record', href: 'living-record.html' },
-              { label: 'Garden Tours',      href: 'garden-tours.html' },
-              { label: 'My Art Gallery', href: '../about.html#gallery' },
+              { label: 'Yogapedia',         href: 'yogapedia.html' },
+              { label: 'My Art Gallery',    href: '../about.html#gallery' },
             ]},
           ].map(col =>
             <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

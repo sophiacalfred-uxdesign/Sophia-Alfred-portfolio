@@ -43,29 +43,46 @@
 
     .sidenav {
       position: sticky; top: 56px;
-      width: 199px; min-width: 199px;
+      width: 240px; min-width: 240px;
       height: calc(100vh - 56px);
-      padding: 18px;
-      background: #FCFDFE;
-      border-right: 1px solid rgba(0,0,0,0.06);
+      padding: 32px 24px 24px 36px;
+      background: transparent;
       display: flex; flex-direction: column;
       justify-content: space-between;
       flex-shrink: 0; align-self: flex-start;
     }
-    .sidenav-top { display: flex; flex-direction: column; gap: 12px; }
-    .sidenav-link {
-      font-family: 'IBM Plex Mono', monospace; font-weight: 400;
-      font-size: 11px; letter-spacing: 0.06em; line-height: 165%;
-      text-transform: uppercase; text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-      color: #6E6E78; transition: color 0.15s ease;
+    .sidenav-top { display: flex; flex-direction: column; gap: 0; }
+    .sidenav-heading {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 500;
+      font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #A8A8B3;
+      margin-bottom: 16; padding-left: 16px;
     }
-    .sidenav-link.active { color: #ED5632; font-weight: 500; }
-    .sidenav-link:hover { color: #5A5A65; }
-    .sidenav-link.home { color: #5A5A65; margin-bottom: 10px; }
+    .sidenav-link {
+      font-family: 'Switzer', sans-serif; font-weight: 400;
+      font-size: 14px; letter-spacing: 0.01em; line-height: 1.5;
+      text-decoration: none;
+      display: block; padding: 6px 0 6px 20px;
+      color: #7A7A85; transition: color 0.15s ease;
+    }
+    .sidenav-link.active { color: #1C1C22; font-weight: 500; }
+    .sidenav-link:hover { color: #1C1C22; }
+    .sidenav-rail { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
+    .sidenav-rail.active {
+      clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+      transition: clip-path 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidenav-link.home-link {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 400;
+      font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #6E6E78;
+      border-left: none; padding-left: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sidenav-link.home-link:hover { color: #1C1C22; }
     .sidenav-link svg { flex-shrink: 0; }
 
-    .content-pad { padding: 0 clamp(40px, 7vw, 120px); }
+    .content-pad { padding: 0 clamp(40px, 5vw, 80px); max-width: 850px; }
 
     /* ── Timeline ── */
     .ew-timeline { position: relative; margin-top: 8px; }
@@ -107,7 +124,11 @@
       border-bottom-left-radius: 4px;
     }
 
-    @media (max-width: 768px) { .sidenav { display: none; } }
+    @media (max-width: 768px) {
+      .sidenav { display: none; }
+      .nav-links { display: none !important; }
+      .hamburger-btn { display: flex !important; }
+    }
 
   </style>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
@@ -122,18 +143,34 @@
 function EWNav({ activePage }) {
   const [scrolled, setScrolled] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const handleCopyEmail = () => {
     try { navigator.clipboard.writeText('sophiacalfred@gmail.com'); } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
+  const navLinks = [
+    ['work',   'Work',   '../index.html#case-studies'],
+    ['about',  'About',  '../about.html'],
+    ['resume', 'Resume', '../assets/sophia-resume.pdf'],
+  ];
+
   return (
+    <React.Fragment>
     <nav style={{
       width: '100%', height: 56,
       background: scrolled ? 'rgba(252,253,254,0.92)' : 'rgba(252,253,254,0.001)',
@@ -147,12 +184,18 @@ function EWNav({ activePage }) {
       <a href="../index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
         <img src="../assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
       </a>
-      <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-        {[
-          ['work',   'Work',   '../index.html#case-studies'],
-          ['about',  'About',  '../about.html'],
-          ['resume', 'Resume', '../assets/sophia-resume.pdf'],
-        ].map(([id, label, href]) =>
+      <button className="hamburger-btn" onClick={() => setMenuOpen(true)} style={{
+        display: 'none', background: 'none', border: 'none', padding: 4, cursor: 'pointer',
+        color: '#1C1C22', zIndex: 101, alignItems: 'center', justifyContent: 'center',
+      }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <div className="nav-links" style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        {navLinks.map(([id, label, href]) =>
           <a key={id} href={href}
             target={id === 'resume' ? '_blank' : undefined}
             rel={id === 'resume' ? 'noopener noreferrer' : undefined}
@@ -188,6 +231,52 @@ function EWNav({ activePage }) {
         </a>
       </div>
     </nav>
+    {menuOpen && (
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 200,
+        background: 'rgba(252,253,254,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32,
+      }}>
+        <button onClick={() => setMenuOpen(false)} style={{
+          position: 'absolute', top: 16, right: 20,
+          background: 'none', border: 'none', cursor: 'pointer', color: '#1C1C22', padding: 4,
+        }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>
+          </svg>
+        </button>
+        {navLinks.map(([id, label, href]) =>
+          <a key={id} href={href} onClick={() => setMenuOpen(false)}
+            target={id === 'resume' ? '_blank' : undefined}
+            rel={id === 'resume' ? 'noopener noreferrer' : undefined}
+            style={{
+              fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 22,
+              color: activePage === id ? '#1C1C22' : '#67676F',
+              textDecoration: activePage === id ? 'underline' : 'none',
+              textUnderlineOffset: '4px', letterSpacing: '0.01em',
+            }}>
+            {label}
+          </a>
+        )}
+        <div style={{ width: 40, height: 1, background: 'rgba(28,28,34,0.12)' }} />
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <button onClick={handleCopyEmail} style={{
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              color: '#67676F', display: 'flex',
+            }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+            </button>
+            {copied && <div className="copied-toast">Email copied!</div>}
+          </div>
+          <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
+            style={{ color: '#67676F', display: 'flex' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    )}
+    </React.Fragment>
   );
 }
 
@@ -209,8 +298,8 @@ function EWFooter() {
               { label: 'Resume',   href: '../assets/sophia-resume.pdf', external: true },
             ]},
             { heading: 'work', links: [
+              { label: 'Cloudflare Radar',  href: 'cloudflare.html' },
               { label: 'The Living Record', href: 'living-record.html' },
-              { label: 'Garden Tours',      href: 'garden-tours.html' },
               { label: 'Yogapedia',         href: 'yogapedia.html' },
               { label: 'My Art Gallery',    href: '../about.html#gallery' },
             ]},
@@ -247,7 +336,6 @@ function EWFooter() {
   );
 }
 
-const SECTION_IDS = ['overview', 'research', 'insights', 'ia', 'wireframes', 'final-designs', 'impact'];
 const NAV_LINKS = [
   { id: 'overview',      label: 'Overview' },
   { id: 'research',      label: 'Research' },
@@ -257,49 +345,147 @@ const NAV_LINKS = [
   { id: 'final-designs', label: 'Final Designs' },
   { id: 'impact',        label: 'Impact' },
 ];
+const ALL_NAV_IDS = NAV_LINKS.map(l => l.id);
 
-const ArrowLeft = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-    <path d="M7.5 2L3.5 6L7.5 10" stroke="#5A5A65" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
+const TLDR_NAV_LINKS = [
+  { id: 'overview',      label: 'Overview' },
+  { id: 'ia',            label: 'IA & Testing' },
+  { id: 'final-designs', label: 'Final Designs' },
+];
+
 const ArrowUp = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: 'rotate(90deg)' }}>
     <path d="M7.5 2L3.5 6L7.5 10" stroke="#5A5A65" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-function SideNav() {
-  const [active, setActive] = React.useState('overview');
+function ViewToggle({ view, setView }) {
+  const OPTIONS = [
+    ['tldr', 'TL;DR'],
+    ['full', 'Full Case Study'],
+  ];
+  return (
+    <div style={{ display: 'inline-flex', border: '1px solid rgba(28,28,34,0.15)', borderRadius: 6 }}>
+      {OPTIONS.map(([id, label]) => (
+        <button key={id}
+          onClick={() => setView(id)}
+          style={{
+            padding: '8px 16px', cursor: 'pointer',
+            border: '2px solid',
+            borderColor: view === id ? '#fff' : 'transparent',
+            borderRadius: 5,
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            background: view === id ? '#1C1C22' : 'transparent',
+            color: view === id ? '#fff' : '#6E6E78',
+            transition: 'background 0.15s ease, color 0.15s ease, border-color 0.15s ease',
+            backgroundClip: 'padding-box',
+          }}
+          onMouseEnter={e => { if (view !== id) e.currentTarget.style.background = '#F4F4F6'; }}
+          onMouseLeave={e => { if (view !== id) e.currentTarget.style.background = 'transparent'; }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SideNav({ view }) {
+  const links = view === 'tldr' ? TLDR_NAV_LINKS : NAV_LINKS;
+  const [active, setActive] = React.useState(links[0].id);
+  const listRef = React.useRef(null);
+  const linkRefs = React.useRef({});
+  const [railPath, setRailPath] = React.useState('');
+  const [railSize, setRailSize] = React.useState({ w: 0, h: 0 });
+  const [activeClip, setActiveClip] = React.useState('polygon(0 0, 0 0, 0 0, 0 0)');
+
+  const items = React.useMemo(() => {
+    return links.map(({ id }) => ({ id, depth: 2 }));
+  }, [links]);
+
   React.useEffect(() => {
+    const ids = items.map(it => it.id);
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) setActive(entry.target.id);
       });
     }, { rootMargin: '-56px 0px -70% 0px', threshold: 0 });
-    SECTION_IDS.forEach(id => {
+    ids.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [items]);
+
+  React.useLayoutEffect(() => {
+    const compute = () => {
+      const list = listRef.current;
+      if (!list) { setRailPath(''); return; }
+      const L = list.getBoundingClientRect();
+      let d = '', w = 0, h = 0, prev = null;
+      const positions = {};
+      items.forEach(({ id }) => {
+        const el = linkRefs.current[id];
+        if (!el) return;
+        const x = 8.5;
+        const cs = getComputedStyle(el);
+        const top = (el.getBoundingClientRect().top - L.top) + parseFloat(cs.paddingTop);
+        const bottom = (el.getBoundingClientRect().top - L.top) + el.clientHeight - parseFloat(cs.paddingBottom);
+        w = Math.max(x + 8, w);
+        h = Math.max(h, bottom);
+        if (!prev) {
+          d += ` M${x} ${top} L${x} ${bottom}`;
+        } else {
+          d += ` L${x} ${top} L${x} ${bottom}`;
+        }
+        positions[id] = { top, bottom, x };
+        prev = { x, bottom };
+      });
+      setRailPath(d);
+      setRailSize({ w, h });
+      const p = positions[active];
+      if (p) {
+        setActiveClip(`polygon(0 ${p.top}px, 100% ${p.top}px, 100% ${p.bottom}px, 0 ${p.bottom}px)`);
+      } else {
+        setActiveClip('polygon(0 0, 0 0, 0 0, 0 0)');
+      }
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    const t = setTimeout(compute, 50);
+    return () => { window.removeEventListener('resize', compute); clearTimeout(t); };
+  }, [active, items]);
+
   return (
     <aside className="sidenav">
       <div className="sidenav-top">
-        <a href="../index.html" className="sidenav-link home">
-          <ArrowLeft /> HOME
+        <a href="../index.html" className="sidenav-link home-link" style={{ marginBottom: 16 }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"></path></svg>
+          Home
         </a>
-        {NAV_LINKS.map(({ id, label }) => (
-          <a key={id} href={`#${id}`}
-            className={`sidenav-link${active === id ? ' active' : ''}`}>
-            {label}
-          </a>
-        ))}
+        <div ref={listRef} style={{ position: 'relative' }}>
+          <svg className="sidenav-rail" width={railSize.w} height={railSize.h}
+            viewBox={`0 0 ${railSize.w} ${railSize.h}`} aria-hidden="true">
+            <path d={railPath} fill="none" stroke="rgba(0,0,0,0.14)" strokeWidth="1" />
+          </svg>
+          <svg className="sidenav-rail active" width={railSize.w} height={railSize.h}
+            viewBox={`0 0 ${railSize.w} ${railSize.h}`} aria-hidden="true"
+            style={{ clipPath: activeClip }}>
+            <path d={railPath} fill="none" stroke="#1C1C22" strokeWidth="1.5" />
+          </svg>
+          {links.map(({ id, label }) => (
+            <a key={id} href={`#${id}`} ref={el => (linkRefs.current[id] = el)}
+              className={`sidenav-link${active === id ? ' active' : ''}`}>
+              {label}
+            </a>
+          ))}
+        </div>
       </div>
-      <a href="#overview"
-        className="sidenav-link home"
+      <a href="#overview" className="sidenav-link home-link"
         onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-        <ArrowUp /> BACK TO TOP
+        <ArrowUp /> Back to top
       </a>
     </aside>
   );
@@ -550,10 +736,208 @@ function WireframeCard({ src, title, desc }) {
   );
 }
 
+/* ── TldrView ── */
+function TldrView({ onViewFull }) {
+  return (
+    <div style={{ paddingBottom: 80 }}>
+      {/* IA & Testing */}
+      <section id="ia" style={{ paddingTop: 48 }}>
+        <div className="content-pad">
+          <div style={sectionLabel}>Information Architecture</div>
+          <h3 style={sectionHeading}>Tree testing the structure</h3>
+          <p style={{ ...bodyText, marginBottom: 24 }}>
+            Using the card sort results as a guide, I created a structure map and tested it with a tree test to measure findability using only labels and hierarchy. Participants were recruited from Reddit's r/yogateachers community.
+          </p>
+
+          {/* Tree test v1 */}
+          <div style={{ background: '#FFFFFF', border: '1px solid #DAD7D7', borderRadius: 4, padding: '20px 24px', marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 14, color: '#1C1C22' }}>Tree Test 1 — Lowest Performing Tasks</div>
+              <div style={{ ...mono, fontSize: 10, color: '#5A5A65' }}>n=22, 8 tasks</div>
+            </div>
+            {[
+              { task: 'Where would you find information about the benefits of Power Yoga?', pct: 45.5 },
+              { task: 'Where would you find what you can expect from a Yoga Sculpt class?', pct: 50.0 },
+            ].map(({ task, pct }) => (
+              <div key={task} style={{ marginBottom: 16 }}>
+                <div style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, color: '#5A5A65', marginBottom: 8 }}>{task}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ flex: 1, height: 8, background: 'rgba(28,28,34,0.1)', borderRadius: 999, overflow: 'hidden' }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: '#E5533D', borderRadius: 999 }} />
+                  </div>
+                  <span style={{ ...mono, fontSize: 11, color: '#5A5A65', minWidth: 40 }}>{pct}%</span>
+                </div>
+              </div>
+            ))}
+            <Callout label="KEY LEARNING">
+              For "class type" findability tasks, success was <strong style={{ color: '#1C1C22' }}>47%</strong> — indicating friction in the current labels or hierarchy.
+            </Callout>
+          </div>
+
+          {/* V1 → V2 */}
+          <h3 style={{ ...sectionHeading, marginBottom: 8 }}>Iterating the Structure</h3>
+          <p style={{ ...bodyText, marginBottom: 20 }}>
+            The first tree test showed friction in "class type" tasks. In v1, class types were organized around traditional yoga categories (e.g., Hatha / Vinyasa). I reorganized them into <strong style={{ color: '#1C1C22' }}>thematic groupings</strong> that matched how participants naturally talked about yoga classes.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 1fr', gap: 32, alignItems: 'center', marginBottom: 24 }}>
+            {/* V1 */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #DAD7D7', borderRadius: 4, padding: '18px' }}>
+              <div style={{ ...metaLabel, marginBottom: 10 }}>Version 1</div>
+              <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 13, color: '#1C1C22', marginBottom: 12 }}>Types of Yoga</div>
+              <ul className="v12-tree-list">
+                {[['Vinyasa', 'ex: Power Yoga'], ['Hatha', 'ex: Iyengar'], ['Hot Yoga', 'ex: Bikram'], ['Restorative', 'ex: Yin Yoga'], ['More', 'ex: Yoga Sculpt']].map(([name, ex]) => (
+                  <li key={name} className="v12-tree-item">
+                    <span style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, color: '#5A5A65' }}>{name}</span>
+                    <span style={{ fontFamily: 'Switzer, sans-serif', fontSize: 11, color: '#5A5A65', opacity: 0.7 }}>{ex}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Arrow */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="80" height="20" viewBox="0 0 80 20" fill="none" stroke="#A8A8B3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 10h68"/>
+                <path d="m62 4 8 6-8 6"/>
+              </svg>
+            </div>
+            {/* V2 */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #DAD7D7', borderRadius: 4, padding: '18px' }}>
+              <div style={{ ...metaLabel, marginBottom: 10 }}>Version 2</div>
+              <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 13, color: '#1C1C22', marginBottom: 12 }}>Types of Yoga Classes</div>
+              <ul className="v12-tree-list">
+                {[['Flow Based Classes', 'ex: Power, Vinyasa'], ['Heated Classes', 'ex: Bikram'], ['Strength & Fitness', 'ex: Yoga Sculpt, Power'], ['Gentle & Restorative', 'ex: Yin Yoga'], ['Non Traditional', 'ex: Aerial, Yoga Sculpt']].map(([name, ex]) => (
+                  <li key={name} className="v12-tree-item">
+                    <span style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, color: '#1C1C22' }}>{name}</span>
+                    <span style={{ fontFamily: 'Switzer, sans-serif', fontSize: 11, color: '#5A5A65', opacity: 0.7 }}>{ex}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Success rate comparison */}
+          <div style={{ background: '#FFFFFF', border: '1px solid #DAD7D7', borderRadius: 4, padding: '20px 24px', marginBottom: 32 }}>
+            <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 14, color: '#1C1C22', marginBottom: 16 }}>Success rate improvement for class type findability tasks</div>
+            {[
+              { label: 'Tree test 1 (n=22)', pct: 47, color: '#E5533D' },
+              { label: 'Tree test 2 (n=5)',  pct: 93, color: '#046EEB' },
+            ].map(({ label, pct, color }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+                <div style={{ fontFamily: 'Switzer, sans-serif', fontSize: 13, color: '#5A5A65', minWidth: 230 }}>{label}</div>
+                <div style={{ flex: 1, height: 10, background: 'rgba(28,28,34,0.1)', borderRadius: 999, overflow: 'hidden' }}>
+                  <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 999 }} />
+                </div>
+                <span style={{ ...mono, fontSize: 12, color: '#5A5A65', minWidth: 36 }}>{pct}%</span>
+              </div>
+            ))}
+            <Callout label="TAKEAWAY">
+              Revised labels and thematic groupings increased class type findability from <strong style={{ color: '#1C1C22' }}>47% → 93%</strong>.
+            </Callout>
+          </div>
+
+          {/* Structure map */}
+          <h3 style={{ ...sectionHeading, marginBottom: 16 }}>Final Structure Map</h3>
+          <div style={{ width: '60%', margin: '0 auto' }}>
+            <ZoomableImage
+              src="../assets/yogapedia/structure_map.png"
+              alt="Final structure map for Yogapedia"
+              caption="Final structure map informed by card sort and tree testing insights"
+            />
+          </div>
+
+          <Divider />
+
+          {/* User flow */}
+          <h3 style={{ ...sectionHeading, marginBottom: 8 }}>User Flow</h3>
+          <p style={{ ...bodyText, marginBottom: 16 }}>
+            With the structure validated, I translated the information hierarchy into a detailed user flow modelling both known item retrieval (finding a specific pose) and guided discovery (related concepts).
+          </p>
+          <ZoomableImage
+            src="../assets/yogapedia/User_Flow.png"
+            alt="User flow diagram for Yogapedia"
+            caption="User flow modeling findability and discoverability pathways across the site"
+          />
+        </div>
+      </section>
+
+      {/* Final Designs */}
+      <section id="final-designs" style={{ paddingTop: 48 }}>
+        <div className="content-pad">
+          <div style={sectionLabel}>Final Designs</div>
+          <h3 style={sectionHeading}>Bringing structure to how people explore Western yoga</h3>
+          <p style={{ ...bodyText, marginBottom: 40 }}>
+            The final designs cover four key pages, each operationalizing the taxonomy through different navigation patterns tailored to the user's intent.
+          </p>
+
+          {[
+            {
+              title: 'Floor Poses Page',
+              desc: 'Users can browse poses through sorting by category and using faceted filters. Local navigation sits in a vertical left menu. This was a change driven by usability evaluation findings that users struggled to distinguish the global navigation from the local navigation.',
+              src: '../assets/yogapedia/wireframe_floor_poses.png',
+              alt: 'Floor Poses page wireframe',
+            },
+            {
+              title: 'Pose Detail Page: Firefly Pose',
+              desc: 'The pose detail page supports discovery through contextual tags, preparatory poses at the bottom of the page, and a bookmark icon for saving content. Clicking any tag navigates to other poses with that attribute.',
+              src: '../assets/yogapedia/wireframe-firefly-pose.png',
+              alt: 'Firefly Pose detail page wireframe',
+            },
+            {
+              title: 'Global Search Results',
+              desc: 'A site wide search experience with autocorrect, autosuggest, and result type filters. Metadata links and contextual navigation support onward discovery from any result.',
+              src: '../assets/yogapedia/wireframe-global-search.png',
+              alt: 'Global Search Results wireframe',
+            },
+            {
+              title: 'Getting Started with Yoga',
+              desc: 'A beginner focused page with guided content sections, local navigation, and a controlled vocabulary search that surfaces only class types, helping new users orient without getting overwhelmed.',
+              src: '../assets/yogapedia/wireframe-getting-started.png',
+              alt: 'Getting Started with Yoga wireframe',
+            },
+          ].map(({ title, desc, src, alt }) => (
+            <div key={title} style={{ marginBottom: 52 }}>
+              <div style={{ fontFamily: 'Switzer, sans-serif', fontWeight: 500, fontSize: 16, color: '#1C1C22', marginBottom: 6 }}>{title}</div>
+              <p style={{ ...bodyText, marginBottom: 16 }}>{desc}</p>
+              <div style={{ width: '50%', margin: '0 auto' }}>
+                <ZoomableImage src={src} alt={alt} hideHint={true} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Want to see more? CTA */}
+      <div className="content-pad" style={{ marginTop: 56 }}>
+        <p style={{ ...bodyText, margin: '0 0 16px' }}>Want to see more?</p>
+        <button
+          onClick={onViewFull}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            fontFamily: "'IBM Plex Mono', monospace", fontSize: 11,
+            fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase',
+            color: '#fff', background: '#1C1C22', border: 'none', cursor: 'pointer',
+            padding: '10px 16px', borderRadius: 6,
+            transition: 'background 0.15s ease',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#000'}
+          onMouseLeave={e => e.currentTarget.style.background = '#1C1C22'}
+        >
+          Check out the full case study
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════
    PAGE
 ══════════════════════════════════════════════ */
 function YogapediaPage() {
+  const [view, setView] = React.useState('full');
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FCFDFE' }}>
       <EWNav />
@@ -566,11 +950,11 @@ function YogapediaPage() {
 
       {/* PAGE LAYOUT */}
       <div style={{ display: 'flex', flex: 1 }}>
-        <SideNav />
+        <SideNav view={view} />
 
         <main style={{ flex: 1, minWidth: 0, paddingBottom: 80 }}>
 
-          {/* ══ OVERVIEW ══ */}
+          {/* ══ OVERVIEW — always visible ══ */}
           <section id="overview" style={{ paddingTop: 48 }}>
             <div className="content-pad">
               <div style={{ ...mono, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5A5A65', marginBottom: 8 }}>
@@ -657,8 +1041,17 @@ function YogapediaPage() {
                 </div>
               </div>
 
+              {/* ViewToggle */}
+              <div style={{ marginTop: 32, marginBottom: 16 }}>
+                <ViewToggle view={view} setView={setView} />
+              </div>
+
             </div>
           </section>
+
+          {view === 'tldr' && <TldrView onViewFull={() => { setView('full'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />}
+          {view === 'full' && (
+            <React.Fragment>
 
           {/* ══ RESEARCH ══ */}
           <section id="research" style={{ paddingTop: 48 }}>
@@ -1155,6 +1548,9 @@ function YogapediaPage() {
               </div>
             </div>
           </section>
+
+            </React.Fragment>
+          )}
 
         </main>
       </div>

@@ -43,29 +43,52 @@
 
     .sidenav {
       position: sticky; top: 56px;
-      width: 199px; min-width: 199px;
+      width: 240px; min-width: 240px;
       height: calc(100vh - 56px);
-      padding: 18px;
-      background: #FCFDFE;
-      border-right: 1px solid rgba(0,0,0,0.06);
+      padding: 32px 24px 24px 36px;
+      background: transparent;
       display: flex; flex-direction: column;
       justify-content: space-between;
       flex-shrink: 0; align-self: flex-start;
     }
-    .sidenav-top { display: flex; flex-direction: column; gap: 12px; }
-    .sidenav-link {
-      font-family: 'IBM Plex Mono', monospace; font-weight: 400;
-      font-size: 11px; letter-spacing: 0.06em; line-height: 165%;
-      text-transform: uppercase; text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-      color: #6E6E78; transition: color 0.15s ease;
+    .sidenav-top { display: flex; flex-direction: column; gap: 0; }
+    .sidenav-heading {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 500;
+      font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #A8A8B3;
+      margin-bottom: 16; padding-left: 16px;
     }
-    .sidenav-link.active { color: #ED5632; font-weight: 500; }
-    .sidenav-link:hover { color: #5A5A65; }
-    .sidenav-link.home { color: #5A5A65; margin-bottom: 10px; }
+    .sidenav-link {
+      font-family: 'Switzer', sans-serif; font-weight: 400;
+      font-size: 14px; letter-spacing: 0.01em; line-height: 1.5;
+      text-decoration: none;
+      display: block; padding: 6px 0 6px 20px;
+      color: #7A7A85; transition: color 0.15s ease;
+    }
+    .sidenav-link.active { color: #1C1C22; font-weight: 500; }
+    .sidenav-link:hover { color: #1C1C22; }
+    .sidenav-sub-group { display: flex; flex-direction: column; }
+    .sidenav-sub-group .sidenav-link.sub {
+      padding-left: 28px;
+      font-size: 13px;
+    }
+    .sidenav-sub-group .sidenav-link.sub.active { color: #1C1C22; font-weight: 500; }
+    .sidenav-rail { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
+    .sidenav-rail.active {
+      clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+      transition: clip-path 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidenav-link.home-link {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 400;
+      font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #6E6E78;
+      border-left: none; padding-left: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sidenav-link.home-link:hover { color: #1C1C22; }
     .sidenav-link svg { flex-shrink: 0; }
 
-    .content-pad { padding: 0 clamp(40px, 7vw, 120px); }
+    .content-pad { padding: 0 clamp(40px, 5vw, 80px); max-width: 850px; }
 
     .expandable-img { cursor: zoom-in; transition: opacity 0.15s; }
     .expandable-img:hover { opacity: 0.9; }
@@ -137,6 +160,8 @@
 
     @media (max-width: 768px) {
       .sidenav { display: none; }
+      .nav-links { display: none !important; }
+      .hamburger-btn { display: flex !important; }
     }
   </style>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
@@ -163,12 +188,17 @@
 function EWNav({ activePage }) {
   const [scrolled, setScrolled] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
   const handleCopyEmail = () => {
     try { navigator.clipboard.writeText('sophiacalfred@gmail.com'); } catch {}
     setCopied(true);
@@ -177,7 +207,13 @@ function EWNav({ activePage }) {
   const activeColor   = scrolled ? '#1C1C22' : 'rgba(255,255,255,0.95)';
   const inactiveColor = scrolled ? '#67676F' : 'rgba(255,255,255,0.55)';
   const hoverColor    = scrolled ? '#1C1C22' : 'rgba(255,255,255,0.95)';
+  const navLinks = [
+    ['work','Work','../index.html#case-studies'],
+    ['about','About','../about.html'],
+    ['resume','Resume','../assets/sophia-resume.pdf'],
+  ];
   return (
+    <React.Fragment>
     <nav style={{
       width:'100%', height:56,
       background: scrolled ? 'rgba(252,253,254,0.92)' : 'rgba(0,0,0,0.01)',
@@ -191,8 +227,8 @@ function EWNav({ activePage }) {
         <img src={scrolled ? '../assets/sophia-logo.png' : '../assets/sophia-logo-white.png'}
           alt="sophia alfred" style={{ height:28, display:'block', transition:'opacity 0.2s' }} />
       </a>
-      <div style={{ display:'flex', gap:20, alignItems:'center' }}>
-        {[['work','Work','../index.html#case-studies'],['about','About','../about.html'],['resume','Resume','../assets/sophia-resume.pdf']].map(([id,label,href]) =>
+      <div className="nav-links" style={{ display:'flex', gap:20, alignItems:'center' }}>
+        {navLinks.map(([id,label,href]) =>
           <a key={id} href={href} target={id==='resume'?'_blank':undefined} rel={id==='resume'?'noopener noreferrer':undefined}
             style={{ fontFamily:'Switzer, sans-serif', fontWeight: 400, fontSize:14, letterSpacing:'0.01em',
               textDecoration: activePage===id ? 'underline' : 'none', textUnderlineOffset: '4px',
@@ -221,7 +257,52 @@ function EWNav({ activePage }) {
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
         </a>
       </div>
+      <button className="hamburger-btn" onClick={() => setMenuOpen(true)} style={{
+        display: 'none', background: 'none', border: 'none', padding: 4, cursor: 'pointer', color: inactiveColor, zIndex: 101,
+      }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
     </nav>
+    {menuOpen && (
+      <div style={{
+        position:'fixed', inset:0, zIndex:200,
+        background:'rgba(252,253,254,0.97)', backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)',
+        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:32,
+      }}>
+        <button onClick={() => setMenuOpen(false)} style={{
+          position:'absolute', top:16, right:20, background:'none', border:'none', cursor:'pointer', color:'#1C1C22',
+        }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        {navLinks.map(([id,label,href]) =>
+          <a key={id} href={href} onClick={() => setMenuOpen(false)}
+            target={id==='resume'?'_blank':undefined} rel={id==='resume'?'noopener noreferrer':undefined}
+            style={{ fontFamily:'Switzer, sans-serif', fontWeight:400, fontSize:22, color:'#1C1C22', textDecoration:'none', letterSpacing:'0.01em' }}>
+            {label}
+          </a>
+        )}
+        <div style={{ width:40, height:1, background:'rgba(28,28,34,0.1)' }} />
+        <div style={{ display:'flex', gap:24, alignItems:'center' }}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <button onClick={handleCopyEmail} style={{
+              background:'none', border:'none', padding:0, cursor:'pointer', color:'#67676F', display:'flex',
+            }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+            </button>
+            {copied && <div className="copied-toast">Email copied!</div>}
+          </div>
+          <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
+            style={{ color:'#67676F', display:'flex' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    )}
+    </React.Fragment>
   );
 }
 
@@ -239,8 +320,8 @@ function EWFooter() {
               {label:'Resume',href:'../assets/sophia-resume.pdf',external:true},
             ]},
             { heading:'work', links:[
+              {label:'Cloudflare Radar',href:'cloudflare.html'},
               {label:'The Living Record',href:'living-record.html'},
-              {label:'Garden Tours',href:'garden-tours.html'},
               {label:'Yogapedia',href:'yogapedia.html'},
               {label:'My Art Gallery',href:'../about.html#gallery'},
             ]},
@@ -269,47 +350,190 @@ function EWFooter() {
   );
 }
 
-const SECTION_IDS = ['the-problem','discover','define','develop','final-solution','reflection'];
 const NAV_LINKS = [
   { id:'the-problem',    label:'The Problem' },
   { id:'discover',       label:'Discover' },
   { id:'define',         label:'Define' },
-  { id:'develop',        label:'Develop' },
-  { id:'final-solution', label:'Solution' },
+  {
+    id:'develop',        label:'Develop',
+    children: [
+      { id:'develop-research',      label:'Exhibition research' },
+      { id:'develop-concept',       label:'Concept' },
+      { id:'develop-specification', label:'Specifying every room' },
+    ],
+  },
+  {
+    id:'final-solution', label:'Solution',
+    children: [
+      { id:'solution-walkthrough', label:'Exhibit walkthrough' },
+      { id:'solution-walls',      label:'Wall data visualizations' },
+      { id:'solution-prototypes', label:'Garden room prototypes' },
+    ],
+  },
   { id:'reflection',     label:'Reflection' },
 ];
+const ALL_NAV_IDS = NAV_LINKS.flatMap(l => [l.id, ...(l.children || []).map(c => c.id)]);
 
-const ArrowLeft = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-    <path d="M7.5 2L3.5 6L7.5 10" stroke="#5A5A65" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 const ArrowUp = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform:'rotate(90deg)' }}>
     <path d="M7.5 2L3.5 6L7.5 10" stroke="#5A5A65" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-function SideNav() {
-  const [active, setActive] = React.useState('the-problem');
+const TLDR_NAV_LINKS = [
+  { id:'the-problem',    label:'The Problem' },
+  { id:'final-solution', label:'Solution' },
+];
+
+function ViewToggle({ view, setView }) {
+  const OPTIONS = [
+    ['tldr', 'TL;DR'],
+    ['full', 'Full Case Study'],
+  ];
+  return (
+    <div style={{ display: 'inline-flex', border: '1px solid rgba(28,28,34,0.15)', borderRadius: 6 }}>
+      {OPTIONS.map(([id, label]) => (
+        <button key={id}
+          onClick={() => setView(id)}
+          style={{
+            padding: '8px 16px', cursor: 'pointer',
+            border: '2px solid',
+            borderColor: view === id ? '#fff' : 'transparent',
+            borderRadius: 5,
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            background: view === id ? '#1C1C22' : 'transparent',
+            color: view === id ? '#fff' : '#6E6E78',
+            transition: 'background 0.15s ease, color 0.15s ease, border-color 0.15s ease',
+            backgroundClip: 'padding-box',
+          }}
+          onMouseEnter={e => { if (view !== id) e.currentTarget.style.background = '#F4F4F6'; }}
+          onMouseLeave={e => { if (view !== id) e.currentTarget.style.background = 'transparent'; }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SideNav({ view }) {
+  const links = view === 'tldr' ? TLDR_NAV_LINKS : NAV_LINKS;
+  const [active, setActive] = React.useState(links[0].id);
+  const listRef = React.useRef(null);
+  const linkRefs = React.useRef({});
+  const [railPath, setRailPath] = React.useState('');
+  const [railSize, setRailSize] = React.useState({ w: 0, h: 0 });
+  const [activeClip, setActiveClip] = React.useState('polygon(0 0, 0 0, 0 0, 0 0)');
+
+  const items = React.useMemo(() => {
+    const out = [];
+    links.forEach(({ id, children }) => {
+      out.push({ id, depth: 2 });
+      (children || []).forEach(c => out.push({ id: c.id, depth: 3 }));
+    });
+    return out;
+  }, [links]);
+
   React.useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
-    }, { rootMargin:'-56px 0px -70% 0px', threshold:0 });
-    SECTION_IDS.forEach(id => { const el = document.getElementById(id); if (el) observer.observe(el); });
+    const ids = items.map(it => it.id);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    }, { rootMargin: '-56px 0px -70% 0px', threshold: 0 });
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
     return () => observer.disconnect();
-  }, []);
+  }, [items]);
+
+  React.useLayoutEffect(() => {
+    const lineX = (depth) => (depth <= 2 ? 8 : 16);
+    const compute = () => {
+      const list = listRef.current;
+      if (!list) { setRailPath(''); return; }
+      const L = list.getBoundingClientRect();
+      let d = '', w = 0, h = 0, prev = null;
+      const positions = {};
+      items.forEach(({ id, depth }) => {
+        const el = linkRefs.current[id];
+        if (!el) return;
+        const x = lineX(depth) + 0.5;
+        const cs = getComputedStyle(el);
+        const top = (el.getBoundingClientRect().top - L.top) + parseFloat(cs.paddingTop);
+        const bottom = (el.getBoundingClientRect().top - L.top) + el.clientHeight - parseFloat(cs.paddingBottom);
+        w = Math.max(x + 8, w);
+        h = Math.max(h, bottom);
+        if (!prev) {
+          d += ` M${x} ${top} L${x} ${bottom}`;
+        } else {
+          d += ` C ${prev.x} ${top - 4} ${x} ${prev.bottom + 4} ${x} ${top} L${x} ${bottom}`;
+        }
+        positions[id] = { top, bottom, x };
+        prev = { x, bottom };
+      });
+      setRailPath(d);
+      setRailSize({ w, h });
+      const p = positions[active];
+      if (p) {
+        setActiveClip(`polygon(0 ${p.top}px, 100% ${p.top}px, 100% ${p.bottom}px, 0 ${p.bottom}px)`);
+      } else {
+        setActiveClip('polygon(0 0, 0 0, 0 0, 0 0)');
+      }
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    const t = setTimeout(compute, 50);
+    return () => { window.removeEventListener('resize', compute); clearTimeout(t); };
+  }, [active, items]);
+
   return (
     <aside className="sidenav">
       <div className="sidenav-top">
-        <a href="../index.html" className="sidenav-link home"><ArrowLeft /> HOME</a>
-        {NAV_LINKS.map(({id,label}) => (
-          <a key={id} href={`#${id}`} className={`sidenav-link${active===id?' active':''}`}>{label}</a>
-        ))}
+        <a href="../index.html" className="sidenav-link home-link" style={{ marginBottom: 16 }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"></path></svg>
+          Home
+        </a>
+
+        <div ref={listRef} style={{ position: 'relative' }}>
+          <svg className="sidenav-rail" width={railSize.w} height={railSize.h}
+            viewBox={`0 0 ${railSize.w} ${railSize.h}`} aria-hidden="true">
+            <path d={railPath} fill="none" stroke="rgba(0,0,0,0.14)" strokeWidth="1" />
+          </svg>
+          <svg className="sidenav-rail active" width={railSize.w} height={railSize.h}
+            viewBox={`0 0 ${railSize.w} ${railSize.h}`} aria-hidden="true"
+            style={{ clipPath: activeClip }}>
+            <path d={railPath} fill="none" stroke="#1C1C22" strokeWidth="1.5" />
+          </svg>
+          {links.map(({ id, label, children }) => {
+            const childActive = children && children.some(c => c.id === active);
+            return (
+              <React.Fragment key={id}>
+                <a href={`#${id}`} ref={el => (linkRefs.current[id] = el)}
+                  className={`sidenav-link${(active === id || childActive) ? ' active' : ''}`}>
+                  {label}
+                </a>
+                {children && (
+                  <div className="sidenav-sub-group">
+                    {children.map(c => (
+                      <a key={c.id} href={`#${c.id}`} ref={el => (linkRefs.current[c.id] = el)}
+                        className={`sidenav-link sub${active === c.id ? ' active' : ''}`}>
+                        {c.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
-      <a href="#the-problem" className="sidenav-link home"
-        onClick={e=>{ e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); }}>
-        <ArrowUp /> BACK TO TOP
+      <a href="#the-problem" className="sidenav-link home-link"
+        onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+        <ArrowUp /> Back to top
       </a>
     </aside>
   );
@@ -372,8 +596,139 @@ const MOODBOARD_THEMES = [
     caption:'Environmental moodboard — climate data, biodiversity, and ecological systems' },
 ];
 
+function TldrView({ onViewFull }) {
+  return (
+    <div style={{ paddingBottom: 80 }}>
+      {/* Problem */}
+      <section id="the-problem" style={{ marginBottom: 56, scrollMarginTop: 72 }}>
+        <div className="content-pad">
+          <h2 style={sectionLabel}>The Problem</h2>
+          <h3 style={sectionHeading}>The London Natural History Museum has installed 27 sensor sites in their garden, but how will the public interact with this rich, new data set?</h3>
+          <p style={{ ...bodyText, marginBottom: 0 }}>
+            The sensors collect ecological data 24/7: environment DNA (eDNA), sounds, atmospheric conditions, and more, yet there aren't any plans to bring this to the public. Our task was to create a means for visitors to explore the data in a meaningful way.
+          </p>
+        </div>
+      </section>
+
+      {/* Solution — full section */}
+      <section id="final-solution" style={{ marginBottom: 56, scrollMarginTop: 72 }}>
+        <div className="content-pad">
+          <h2 style={sectionLabel}>Solution</h2>
+          <h3 style={sectionHeading}>The Living Record</h3>
+          <p style={{ ...bodyText, marginBottom: 28 }}>
+            A museum exhibition designed to flow from micro to macro. Visitors move through a sequence of rooms, from the DNA of a single species to the health of the planet. Every data visualization in the exhibit is designed to update as the sensor data updates, fed in real time by the 27 sensor sites across the NHM gardens. 
+          </p>
+
+          {/* Exhibit walkthrough */}
+          <h3 id="solution-walkthrough" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Exhibit Walkthrough</h3>
+          <div style={{ marginBottom:16 }}>
+            <img src="../assets/living-record/exhibit-model-still.png" alt="Exhibit model still"
+              style={{ width:'100%', borderRadius:4, display:'block' }} />
+            <span style={imgCaption}>Rendered still — 3D exhibit model (Blender, Sydney DeLacey)</span>
+          </div>
+          <p style={{ ...bodyText, marginBottom:16 }}>
+            The full 3D model of the exhibit was built and programmed by Sydney, our UX Engineer and shows the complete micro-to-macro journey from microbe room to garden room to global view.
+          </p>
+          <div style={{ borderRadius:6, overflow:'hidden', marginBottom:8, aspectRatio:'640/360', background:'#1C1C22' }}>
+            <iframe
+              src="https://player.cloudinary.com/embed/?cloud_name=dx3jvc4xn&public_id=3D-Model-Demo_vvmir6&autoplay=true&muted=true&loop=true"
+              width="640" height="360"
+              style={{ height:'100%', width:'100%', border:'none', display:'block' }}
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+              allowFullScreen frameBorder="0"
+            />
+          </div>
+          <span style={{ ...imgCaption, marginBottom:32 }}>The Living Record — full exhibit walkthrough</span>
+
+          {/* Wall visualizations */}
+          <h3 id="solution-walls" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Wall Data Visualizations</h3>
+          <p style={{ ...bodyText, marginBottom:16 }}>
+            A core part of my interaction design work was defining how the sensor data would be visualized in each room, and how visitors would interact with it. Each room's walls were then designed to carry that data visually: the urban heat island effect in the global room, eDNA species prevalence in the micro room, and acoustic waveform of animal sounds in the animal room. I used Adobe Firefly to generate representations of these visualizations for the 3D model.
+          </p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:8 }}>
+            {[
+              { src:'../assets/living-record/wall1.png',
+                title:'Global Level — Urban Heat Island Effect',
+                desc:'The global level shows macro-scale climate data. Urban heat island visualisation are paired with control panels, allowing visitors to compare different cities around the world. These visualizations would also display the relative amount of greenspace in these cities.' },
+              { src:'../assets/living-record/wall2.png',
+                title:'Plant & Animal Level — Acoustic Waveform',
+                desc:'The second room translates live sound sensor data into a shifting acoustic landscape. Waveform patterns respond continuously to frequency readings from across the garden sites.' },
+              { src:'../assets/living-record/wall3.png',
+                title:'Micro Level — eDNA Species Prevalence',
+                desc:'The entry room displays biodiversity at the molecular level. The visualization maps environmental DNA species detection data collected from soil and water samples across the NHM gardens.' },
+            ].map((item, i, arr) => (
+              <img key={i} src={item.src} alt={item.title}
+                className="expandable-img"
+                onClick={() => window.openGallery && window.openGallery(arr, i)}
+                style={{ width:'100%', borderRadius:4, display:'block', aspectRatio:'1', objectFit:'cover' }} />
+            ))}
+          </div>
+          <span style={{ ...imgCaption, marginBottom:32 }}>Wall data visualizations — Adobe Firefly</span>
+
+          {/* Garden room prototypes */}
+          <h3 id="solution-prototypes" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Garden Room Prototypes</h3>
+          <p style={{ ...bodyText, marginBottom:20 }}>
+            The garden room interactions were prototyped in Figma. Below are the two main demos: the weather data control panel and the habitat kiosks.
+          </p>
+          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+            <div>
+              <video src="../assets/living-record/control-panel-prototype.mp4" muted loop playsInline autoPlay
+                style={{ width:'100%', display:'block', borderRadius:4 }}
+                onMouseEnter={e=>e.target.setAttribute('controls','')}
+                onMouseLeave={e=>e.target.removeAttribute('controls')} />
+              <span style={imgCaption}>Weather data control panel prototype</span>
+            </div>
+            <div>
+              <video src="../assets/living-record/kiosk-prototype.mp4" muted loop playsInline autoPlay
+                style={{ width:'100%', display:'block', borderRadius:4 }}
+                onMouseEnter={e=>e.target.setAttribute('controls','')}
+                onMouseLeave={e=>e.target.removeAttribute('controls')} />
+              <span style={imgCaption}>Habitat kiosk prototype</span>
+            </div>
+          </div>
+
+          {/* NHM presentation */}
+          <h3 style={{ ...sectionHeading, marginTop:40, marginBottom:12 }}>Presented at the Natural History Museum</h3>
+          <p style={{ ...bodyText, marginBottom:16 }}>
+            The final presentation was delivered on-site at the NHM to their research and UX team. We received feedback that they were really impressed by our concept and that our deliverables were of professional quality.
+          </p>
+          <div style={{ marginBottom:8 }}>
+            <img src="../assets/living-record/NHM-presentation.png" alt="Presentation at NHM"
+              style={{ width:'100%', borderRadius:4, display:'block' }} />
+          </div>
+          <span style={{ ...imgCaption, marginBottom: 32 }}>Final presentation — Natural History Museum</span>
+
+          {/* Want to see more? CTA */}
+          <div style={{ marginTop: 56, marginBottom: 16 }}>
+            <p style={{ ...bodyText, margin: '0 0 16px' }}>Want to see more?</p>
+            <button
+              onClick={onViewFull}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: 11,
+                fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase',
+                color: '#fff', background: '#1C1C22', border: 'none', cursor: 'pointer',
+                padding: '10px 16px', borderRadius: 6,
+                transition: 'background 0.15s ease',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#000'}
+              onMouseLeave={e => e.currentTarget.style.background = '#1C1C22'}
+            >
+              Check out the full case study
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function LivingRecordPage() {
   const [activeTheme, setActiveTheme] = React.useState('Research');
+  const [view, setView] = React.useState('full');
   return (
     <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#FCFDFE' }}>
       <EWNav />
@@ -394,42 +749,60 @@ function LivingRecordPage() {
         </div>
       </div>
 
-      <div style={{ display:'flex', flex:1 }}>
-        <SideNav />
+      <div style={{ display:'flex', flex:1, gap:'clamp(24px, 3vw, 48px)' }}>
+        <SideNav view={view} />
         <main style={{ flex:1, minWidth:0 }}>
 
+          {/* Context header — always visible */}
+          <div className="content-pad" style={{ paddingTop: 48 }}>
+            <div style={{ ...mono, fontSize:11, letterSpacing:'0.08em', textTransform:'uppercase', color:'#A8A8B3', marginBottom:8 }}>
+              Exhibition Design · London Natural History Museum
+            </div>
+            <h2 style={{ fontFamily:"'Self Modern', serif", fontWeight:400, fontSize:'clamp(24px,3.5vw,44px)', color:'#1C1C22', lineHeight:1.1, marginBottom:24 }}>
+              The Living Record
+            </h2>
+
+            {/* Meta strip — equal columns */}
+            <div style={{ display:'flex', justifyContent:'space-between',
+              borderTop:'1px solid rgba(28,28,34,0.1)', paddingTop:16, marginBottom:32 }}>
+              {[
+                { label:'Timeline', value:'Jan – Apr 2026' },
+                { label:'My Role',  value:'Interaction Designer' },
+                { label:'Team',     value:'Sydney DeLacey (UX Engineer)\nYemisi Agbebi (UX Researcher)' },
+                { label:'Tools',    value:'Figma\nAdobe Firefly\nProcreate' },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <div style={{ ...mono, fontSize:10, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:6 }}>{label}</div>
+                  <div style={{ fontFamily:'Switzer, sans-serif', fontSize:13, color:'#5A5A65', lineHeight:1.65, whiteSpace:'pre-line' }}>{value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div id="view-toggle-anchor" className="content-pad" style={{ paddingBottom: 40, scrollMarginTop: 24 }}>
+            <ViewToggle view={view} setView={setView} />
+          </div>
+
+          {view === 'tldr' && <TldrView onViewFull={() => {
+            setView('full');
+            requestAnimationFrame(() => {
+              const el = document.getElementById('view-toggle-anchor');
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+          }} />}
+
+          {view === 'full' && <React.Fragment>
+
           {/* ── THE PROBLEM ── */}
-          <section id="the-problem" style={{ paddingTop:48, paddingBottom:48 }}>
+          <section id="the-problem" style={{ paddingTop:0, paddingBottom:48 }}>
             <div className="content-pad">
-              <div style={{ ...mono, fontSize:11, letterSpacing:'0.08em', textTransform:'uppercase', color:'#A8A8B3', marginBottom:8 }}>
-                Exhibition Design · London Natural History Museum
-              </div>
-              <h2 style={{ fontFamily:"'Self Modern', serif", fontWeight:400, fontSize:'clamp(24px,3.5vw,44px)', color:'#1C1C22', lineHeight:1.1, marginBottom:24 }}>
-                The Living Record
-              </h2>
-
-              {/* Meta strip — equal columns */}
-              <div style={{ display:'flex', justifyContent:'space-between',
-                borderTop:'1px solid rgba(28,28,34,0.1)', paddingTop:16, marginBottom:32 }}>
-                {[
-                  { label:'Timeline', value:'Jan – Apr 2026' },
-                  { label:'My Role',  value:'Interaction Designer' },
-                  { label:'Team',     value:'Sydney DeLacey (UX Engineer)\nYemisi Agbebi (UX Researcher)' },
-                  { label:'Tools',    value:'Figma\nAdobe Firefly\nProcreate' },
-                ].map(({ label, value }) => (
-                  <div key={label}>
-                    <div style={{ ...mono, fontSize:10, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#ED5632', marginBottom:6 }}>{label}</div>
-                    <div style={{ fontFamily:'Switzer, sans-serif', fontSize:13, color:'#5A5A65', lineHeight:1.65, whiteSpace:'pre-line' }}>{value}</div>
-                  </div>
-                ))}
-              </div>
-
               <span style={sectionLabel}>The Problem</span>
               <h3 style={{ fontFamily:'Switzer, sans-serif', fontWeight:400, fontSize:'clamp(15px,1.5vw,18px)', lineHeight:1.55, color:'#1C1C22', marginBottom:16 }}>
                 The London Natural History Museum has installed 27 sensor sites in their garden, but how will the public interact with this rich, new data set?
               </h3>
               <p style={{ ...bodyText, marginBottom:16 }}>
-                The Natural History Museum's Urban Nature Project has embedded 27 sensors across their garden, collecting ecological data 24/7: environment DNA (eDNA), sounds, atmospheric conditions, and more. Our team worked through the double diamond framework, using divergent methods such as brainwriting, sketching, and community exploration to shape our concept.
+                           The sensors collect ecological data 24/7: environment DNA (eDNA), sounds, atmospheric conditions, and more, yet there aren't any plans to bring this to the public. Our task was to create a means for visitors to explore the data in a meaningful way.
+
               </p>
               
               <a href="#final-solution" style={{
@@ -552,7 +925,7 @@ function LivingRecordPage() {
               {/* Frameworks first — title + text left, IPOP image right */}
               <div style={{ display:'flex', gap:20, alignItems:'flex-start', marginBottom:32 }}>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <span style={sectionLabel}>Exhibition Research</span>
+                  <span id="develop-research" style={{ ...sectionLabel, scrollMarginTop: 72 }}>Exhibition Research</span>
                   <h3 style={sectionHeading}>Understanding what good exhibit design looks like</h3>
                   <p style={{ ...bodyText, marginBottom:16 }}>
                     Now that we were moving forward with the exhibit concept, we needed to get a handle on what good exhibit design looked like in practice. Two frameworks became lenses we returned to throughout the rest of the project.
@@ -614,7 +987,7 @@ function LivingRecordPage() {
               <span style={{ ...imgCaption, marginBottom:40 }}>Natural History Museum — observation visit</span>
 
               {/* Concept */}
-              <span style={sectionLabel}>Concept</span>
+              <span id="develop-concept" style={{ ...sectionLabel, scrollMarginTop: 72 }}>Concept</span>
               <h3 style={sectionHeading}>Giving the exhibit a shape and a story</h3>
 
               <p style={{ ...bodyText, marginBottom:20 }}>
@@ -678,7 +1051,7 @@ function LivingRecordPage() {
               </div>
 
               {/* Specification */}
-              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Specifying every room</h3>
+              <h3 id="develop-specification" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Specifying every room</h3>
               <p style={{ ...bodyText, marginBottom:20 }}>
                 To move from concept to specification, the team worked through a sequence of tools: Crazy 8s, storyboards, and a user journey map to understand how all the interactions would connect end-to-end.
               </p>
@@ -717,7 +1090,7 @@ function LivingRecordPage() {
               </p>
 
               {/* Exhibit walkthrough: title → still → blurb → video */}
-              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Exhibit Walkthrough</h3>
+              <h3 id="solution-walkthrough" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Exhibit Walkthrough</h3>
               <div style={{ marginBottom:16 }}>
                 <img src="../assets/living-record/exhibit-model-still.png" alt="Exhibit model still"
                   style={{ width:'100%', borderRadius:4, display:'block' }} />
@@ -738,7 +1111,7 @@ function LivingRecordPage() {
               <span style={{ ...imgCaption, marginBottom:32 }}>The Living Record — full exhibit walkthrough</span>
 
               {/* Wall visualizations */}
-              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Wall Data Visualizations</h3>
+              <h3 id="solution-walls" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Wall Data Visualizations</h3>
               <p style={{ ...bodyText, marginBottom:16 }}>
                 A core part of my interaction design work was defining how the sensor data would be visualized in each room, and how visitors would interact with it. Each room's walls were then designed to carry that data visually: the urban heat island effect in the global room, eDNA species prevalence in the micro room, and acoustic waveform of animal sounds in the animal room. I used Adobe Firefly to generate representations of these visualizations for the 3D model.
               </p>
@@ -763,7 +1136,7 @@ function LivingRecordPage() {
               <span style={{ ...imgCaption, marginBottom:32 }}>Wall data visualizations — Adobe Firefly</span>
 
               {/* Garden room prototypes — two videos stacked */}
-              <h3 style={{ ...sectionHeading, marginBottom:12 }}>Garden Room Prototypes</h3>
+              <h3 id="solution-prototypes" style={{ ...sectionHeading, marginBottom:12, scrollMarginTop: 72 }}>Garden Room Prototypes</h3>
               <p style={{ ...bodyText, marginBottom:20 }}>
                 The garden room interactions were prototyped in Figma. Below are the two main demos: the weather data control panel and the habitat kiosks.
               </p>
@@ -843,6 +1216,8 @@ function LivingRecordPage() {
               </div>
             </div>
           </section>
+
+          </React.Fragment>}
 
         </main>
       </div>

@@ -52,6 +52,8 @@
       .project-grid { grid-template-columns: 1fr; }
       .resume-current-tag { display: none; }
       .projects-heading { margin-top: 32px; }
+      .nav-links { display: none !important; }
+      .hamburger-btn { display: flex !important; }
     }
 
     @keyframes fadeIn {
@@ -102,6 +104,7 @@
 function EWNav({ activePage }) {
   const [pastHero, setPastHero] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     const onScroll = () => setPastHero(window.scrollY > 0);
@@ -109,13 +112,25 @@ function EWNav({ activePage }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const handleCopyEmail = () => {
     try { navigator.clipboard.writeText('sophiacalfred@gmail.com'); } catch {}
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const navLinks = [
+    ['work',   'Work', '#case-studies'],
+    ['about',  'About',        'about.html'],
+    ['resume', 'Resume',       'assets/sophia-resume.pdf'],
+  ];
+
   return (
+    <React.Fragment>
     <nav style={{
       width: '100%', height: 56,
       background: pastHero ? 'rgba(252,253,254,0.9)' : 'rgba(252,253,254,0.2)',
@@ -130,12 +145,16 @@ function EWNav({ activePage }) {
       <a href="index.html" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
         <img src="assets/sophia-logo.png" alt="sophia alfred" style={{ height: 28, display: 'block' }} />
       </a>
-      <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-        {[
-          ['work',   'Work', '#case-studies'],
-          ['about',  'About',        'about.html'],
-          ['resume', 'Resume',       'assets/sophia-resume.pdf'],
-        ].map(([id, label, href]) =>
+      {/* Hamburger button — hidden on desktop via inline style, shown on mobile via CSS */}
+      <button className="hamburger-btn" onClick={() => setMenuOpen(true)} style={{
+        display: 'none', background: 'none', border: 'none', padding: 4, cursor: 'pointer', color: '#1C1C22', zIndex: 101,
+      }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <div className="nav-links" style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        {navLinks.map(([id, label, href]) =>
           <a key={id} href={href}
             target={id === 'resume' ? '_blank' : undefined}
             rel={id === 'resume' ? 'noopener noreferrer' : undefined}
@@ -175,6 +194,50 @@ function EWNav({ activePage }) {
         </a>
       </div>
     </nav>
+    {/* Mobile menu overlay */}
+    {menuOpen && (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(252,253,254,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32,
+      }}>
+        <button onClick={() => setMenuOpen(false)} style={{
+          position: 'absolute', top: 16, right: 20,
+          background: 'none', border: 'none', padding: 4, cursor: 'pointer', color: '#1C1C22',
+        }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>
+          </svg>
+        </button>
+        {navLinks.map(([id, label, href]) =>
+          <a key={id} href={href} onClick={() => setMenuOpen(false)}
+            target={id === 'resume' ? '_blank' : undefined}
+            rel={id === 'resume' ? 'noopener noreferrer' : undefined}
+            style={{
+              fontFamily: 'Switzer, sans-serif', fontWeight: 400, fontSize: 22, letterSpacing: '0.01em',
+              color: '#1C1C22', textDecoration: 'none',
+            }}>
+            {label}
+          </a>
+        )}
+        <div style={{ width: 40, height: 1, background: 'rgba(28,28,34,0.12)' }} />
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <button onClick={handleCopyEmail} style={{
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#67676F', display: 'flex',
+            }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+            </button>
+            {copied && <div className="copied-toast">Email copied!</div>}
+          </div>
+          <a href="https://www.linkedin.com/in/sophia-alfred-sca07/" target="_blank" rel="noopener noreferrer"
+            style={{ color: '#67676F', display: 'flex' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    )}
+    </React.Fragment>
   );
 }
 
@@ -198,8 +261,8 @@ function EWFooter() {
               { label: 'Resume',   href: 'assets/sophia-resume.pdf', external: true },
             ]},
             { heading: 'work', links: [
+              { label: 'Cloudflare Radar',  href: 'case-studies/cloudflare.html' },
               { label: 'The Living Record', href: 'case-studies/living-record.html' },
-              { label: 'Garden Tours',      href: 'case-studies/garden-tours.html' },
               { label: 'Yogapedia',         href: 'case-studies/yogapedia.html' },
               { label: 'My Art Gallery',    href: 'about.html#gallery' },
             ]},
