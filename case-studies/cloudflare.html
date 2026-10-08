@@ -132,6 +132,12 @@
       .cta-dot { display: none; }
       .hero-cols { flex-direction: column-reverse !important; min-height: auto !important; }
       .hero-cols > * { flex: unset !important; }
+      .hero-cols .hero-top-block { margin-bottom: 40px; }
+      .reading-order-grid { grid-template-columns: 1fr !important; }
+      .reading-order-grid .reading-order-svg { order: -1; }
+      .problem-grid { grid-template-columns: 1fr !important; }
+      .venn-layout { flex-direction: column !important; }
+      .venn-layout .venn-svg { width: 100% !important; }
     }
 
     .content-pad { padding: 0 clamp(40px, 5vw, 80px); max-width: 850px; }
@@ -300,9 +306,9 @@
      links, and the Impact row reads "The updated site is now live!" linked to
      radar.cloudflare.com.
    ────────────────────────────────────────────────────────────────────────── */
-const RADAR_LIVE = false;
+const RADAR_LIVE = true;
 const RADAR_URL = 'https://radar.cloudflare.com';
-const RADAR_BLOG_URL = 'https://blog.cloudflare.com/radar-redesign-birthday-week-2026';
+const RADAR_BLOG_URL = 'https://blog.cloudflare.com/radar-redesign/';
 
 /* useInView — attach the returned ref to an element; `inView` flips true the
    first time that element scrolls into the viewport. Used to delay looping
@@ -960,6 +966,7 @@ function ProblemSection({ hideHeading, hideDesc }) {
       <div className="problem-hint">HOVER CARDS TO EXPLORE</div>
 
       <div
+        className="problem-grid"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         style={{
@@ -992,7 +999,7 @@ function ProblemSection({ hideHeading, hideDesc }) {
 
             <div className="problem-hint">CLICK CARDS TO EXPLORE</div>
 
-            <div style={{
+            <div className="problem-grid" style={{
               display: 'grid', gridTemplateColumns: '1fr 1fr',
               gap: 4, marginTop: 2,
             }}>
@@ -1077,8 +1084,8 @@ function VennDiagram() {
   const activePillar = PILLARS.find(p => p.id === hovered);
 
   return (
-    <div ref={viewRef} style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
-      <div style={{ width: 320, flexShrink: 0 }}>
+    <div ref={viewRef} className="venn-layout" style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
+      <div className="venn-svg" style={{ width: 320, flexShrink: 0 }}>
         <svg viewBox="0 0 400 370" style={{ width: '100%' }}>
         <defs>
           {circles.map(c => (
@@ -1650,7 +1657,7 @@ function ReadingOrderDemo() {
   }, [inView, hovered]);
 
   return (
-    <div ref={viewRef} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, alignItems: 'flex-start', width: '100%', maxWidth: '100%' }}>
+    <div ref={viewRef} className="reading-order-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, alignItems: 'flex-start', width: '100%', maxWidth: '100%' }}>
       <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4, position: 'relative' }}>
         <div className="problem-hint" style={{ textAlign: 'left', marginBottom: 4 }}>HOVER TO VIEW</div>
         {READING_ORDER_ITEMS.map((item, i) => (
@@ -1685,7 +1692,7 @@ function ReadingOrderDemo() {
         ))}
       </div>
 
-      <div style={{ minWidth: 0 }}>
+      <div className="reading-order-svg" style={{ minWidth: 0 }}>
         <div style={{
           width: '100%', lineHeight: 0,
           border: '1px solid rgba(28,28,34,0.08)',
@@ -2385,7 +2392,7 @@ function CloudflarePage() {
           {/* Left column — icon, title, body, then metadata */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignSelf: 'stretch' }}>
             {/* Top: icon, title, description */}
-            <div>
+            <div className="hero-top-block">
               <div style={{ ...mono, fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A8A8B3', marginBottom: 12 }}>
                 Cloudflare • Summer 2026
               </div>
@@ -2728,7 +2735,7 @@ function PasswordGate({ children }) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <PasswordGate><CloudflarePage /></PasswordGate>
+  <CloudflarePage />
 );
 </script>
 </body>
